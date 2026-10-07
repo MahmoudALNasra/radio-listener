@@ -1,27 +1,58 @@
 # Radio Keyword Listener
 
-Phase 1: cabin-mic keyword alerts (test on Lenovo first, then Raspberry Pi Zero).
+Phase 1: cabin-mic keyword alerts on a laptop or **Raspberry Pi 3B+**, with optional Supabase sync.
 
-## Quick start (Lenovo — no hardware purchase needed)
+## Quick start (Windows laptop)
 
 ```powershell
-cd c:\Users\laalg\Downloads\listener\device
-C:\Users\laalg\AppData\Local\Python\bin\python.exe -m pip install -r requirements.txt
-C:\Users\laalg\AppData\Local\Python\bin\python.exe download_model.py
-C:\Users\laalg\AppData\Local\Python\bin\python.exe listener.py
+cd c:\Users\abrah\Downloads\listener\device
+python -m pip install -r requirements.txt
+python download_model.py
+python listener.py
 ```
 
-Say **crash** (or another keyword in `device/config.json`) into the laptop mic.
+Say **crash** (or another keyword in `device/config.json`) into the mic.
 
 - Blue popup = simulated LED
 - Clips land in `device/clips/`
 - Full test checklist: [docs/test-on-lenovo.md](docs/test-on-lenovo.md)
 
+## Raspberry Pi 3B+
+
+Once the Pi has WiFi + SSH:
+
+```bash
+cd ~/radio-listener/device
+./setup_pi.sh
+nano config.json          # set supabase_anon_key + input_device
+source .venv/bin/activate
+python listener.py
+```
+
+Full guide: [docs/setup-raspberry-pi.md](docs/setup-raspberry-pi.md)
+
+## iPhone alerts (free)
+
+Uses [ntfy](https://ntfy.sh) — install the iPhone app, subscribe to your topic, enable `ntfy_*` in `device/config.json` (and web `.env.local` if using phone uploads).
+
+Guide: [docs/iphone-ntfy.md](docs/iphone-ntfy.md)
+
+## Continue on another PC / any Agent
+
+Cursor chats do **not** sync across computers. Shared context is in git:
+
+1. [AGENTS.md](AGENTS.md) — standing instructions (read first)
+2. [docs/AGENT_LOG.md](docs/AGENT_LOG.md) — short running change log
+3. [docs/handoff-other-pc.md](docs/handoff-other-pc.md) — clone / pull steps
+
+After meaningful work, agents should update those files, then commit + push.
+
 ## Layout
 
 | Path | Purpose |
 |------|---------|
-| `device/` | Python listener (Windows + later Pi) |
+| `device/` | Python listener (Windows + Raspberry Pi) |
+| `device/setup_pi.sh` | Pi install (venv, deps, Vosk model) |
 | `supabase/schema.sql` | Database + storage policies |
 | `web/` | Admin keywords + event log (Next.js) |
 | `docs/` | Setup / test guides |

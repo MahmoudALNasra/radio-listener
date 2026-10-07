@@ -1,8 +1,9 @@
 """
-Radio keyword listener — Phase 1 Lenovo test (cabin mic + simulated blue LED).
+Radio keyword listener — cabin mic keyword alerts (Windows / Raspberry Pi).
 
 Usage:
   python download_model.py
+  python list_audio_devices.py   # optional: pick USB mic
   python listener.py
 """
 
@@ -22,6 +23,7 @@ from vosk import KaldiRecognizer, Model, SetLogLevel
 from alert import make_alert
 from audio_buffer import RingBuffer
 from keywords import KeywordMatcher
+from notify import make_notifier
 from sync import EventQueue, SupabaseSync
 
 ROOT = Path(__file__).resolve().parent
@@ -33,10 +35,24 @@ QUEUE_DIR = ROOT / "queue"
 
 def load_config() -> dict:
     if not CONFIG_PATH.exists():
-        example = ROOT / "config.example.json"
+        example = ROOT / "config.pi.example.json"
+        if not example.exists():
+            example = ROOT / "config.example.json"
         CONFIG_PATH.write_text(example.read_text(encoding="utf-8"), encoding="utf-8")
-        print(f"Created {CONFIG_PATH} from example — edit keywords if you want.")
+        print(f"Created {CONFIG_PATH} from example — edit device_id / mic if needed.")
     return json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+
+
+def resolve_input_device(cfg: dict):
+    """Return PortAudio device index/name, or None for system default."""
+    raw = cfg.get("input_device", None)
+    if raw is None or raw == "" or raw == "default":
+        return None
+    if isinstance(raw, int):
+        return raw
+    if isinstance(raw, str) and raw.isdigit():
+        return int(raw)
+    return str(raw)
 
 
 def ensure_model() -> Model:
@@ -117,19 +133,29 @@ def main() -> None:
         keywords=list(cfg.get("keywords", [])),
         cooldown_sec=cooldown,
     )
-    alert = make_alert(cfg.get("alert_backend", "simulate"))
+    alert = make_alert(
+        cfg.get("alert_backend", "simulate"),
+        pin=int(cfg.get("gpio_pin", 17)),
+    )
     # Keep enough history for pre-roll while post-roll collects separately
     ring = RingBuffer(sample_rate=sample_rate, seconds=pre + 2)
 
+    notifier = make_notifier(cfg)
     sync = SupabaseSync(
         url=cfg.get("supabase_url", ""),
         anon_key=cfg.get("supabase_anon_key", ""),
-        device_id=cfg.get("device_id", "lenovo-dev-1"),
+        device_id=cfg.get("device_id", "pi-cabin-1"),
         enabled=bool(cfg.get("sync_enabled", False)),
+        notifier=notifier,
     )
     event_queue = EventQueue(QUEUE_DIR)
+    input_device = resolve_input_device(cfg)
 
     if sync.enabled:
+        sync.ensure_device(
+            name=str(cfg.get("device_name") or cfg.get("device_id")),
+            audio_source=str(cfg.get("audio_source", "cabin_mic")),
+        )
         remote = sync.fetch_keywords()
         if remote:
             matcher.set_keywords(remote)
@@ -143,13 +169,15 @@ def main() -> None:
         audio_q.put(bytes(indata))
 
     print("=" * 56)
-    print("  LISTENER — Lenovo Phase 1 test")
+    print("  LISTENER — radio keyword alerts")
     print(f"  device:   {cfg.get('device_name')} ({cfg.get('device_id')})")
     print(f"  keywords: {', '.join(matcher.keywords)}")
     print(f"  alert:    {cfg.get('alert_backend')}")
+    print(f"  mic:      {input_device if input_device is not None else 'system default'}")
     print(f"  clip:     {pre:.0f}s before + {post:.0f}s after keyword")
     print(f"  sync:     {'ON' if sync.enabled else 'OFF (local clips only)'}")
-    print("  Speak a keyword into the laptop mic. Ctrl+C to stop.")
+    print(f"  ntfy:     {'ON → ' + str(cfg.get('ntfy_topic')) if notifier.enabled else 'OFF'}")
+    print("  Speak a keyword into the mic. Ctrl+C to stop.")
     print("=" * 56)
 
     def sync_loop() -> None:
@@ -157,6 +185,7 @@ def main() -> None:
             time.sleep(30)
             if not sync.enabled:
                 continue
+            sync.touch_device()
             remote = sync.fetch_keywords()
             if remote is not None:
                 matcher.set_keywords(remote)
@@ -189,13 +218,17 @@ def main() -> None:
             daemon=True,
         ).start()
 
-    with sd.RawInputStream(
-        samplerate=sample_rate,
-        blocksize=4000,
-        dtype="int16",
-        channels=1,
-        callback=audio_callback,
-    ):
+    stream_kwargs = {
+        "samplerate": sample_rate,
+        "blocksize": 4000,
+        "dtype": "int16",
+        "channels": 1,
+        "callback": audio_callback,
+    }
+    if input_device is not None:
+        stream_kwargs["device"] = input_device
+
+    with sd.RawInputStream(**stream_kwargs):
         try:
             while True:
                 data = audio_q.get()

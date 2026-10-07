@@ -1,4 +1,4 @@
-"""Alert backends: simulate (Lenovo) or gpio (Pi later)."""
+"""Alert backends: simulate (desktop) or gpio (Raspberry Pi LED)."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import time
 
 
 class SimulateAlert:
-    """Flash a blue on-screen window + console banner."""
+    """Console banner + optional window/beep (best on desktop)."""
 
     def __init__(self, duration_sec: float = 4.0) -> None:
         self.duration_sec = duration_sec
@@ -32,7 +32,6 @@ class SimulateAlert:
             for freq in (880, 1175, 1397):
                 winsound.Beep(freq, 180)
         except Exception:
-            # Fallback terminal bell
             print("\a", end="", flush=True)
 
     def _flash_window(self, keyword: str) -> None:
@@ -62,29 +61,44 @@ class SimulateAlert:
 
 
 class GpioAlert:
-    """Placeholder for Raspberry Pi GPIO blue LED."""
+    """Drive a blue LED on a Raspberry Pi GPIO pin."""
 
     def __init__(self, pin: int = 17, duration_sec: float = 4.0) -> None:
         self.pin = pin
         self.duration_sec = duration_sec
-
-    def trigger(self, keyword: str, transcript: str) -> None:
+        self._lock = threading.Lock()
+        self._led = None
+        self._init_error: Exception | None = None
         try:
             from gpiozero import LED
+
+            self._led = LED(self.pin)
         except Exception as exc:
-            print(f"GPIO unavailable ({exc}); falling back to simulate.")
+            self._init_error = exc
+
+    def trigger(self, keyword: str, transcript: str) -> None:
+        if self._led is None:
+            print(
+                f"GPIO unavailable ({self._init_error}); falling back to simulate."
+            )
             SimulateAlert(self.duration_sec).trigger(keyword, transcript)
             return
 
-        led = LED(self.pin)
-        print(f"GPIO LED pin {self.pin} ON — keyword={keyword}")
-        led.on()
-        time.sleep(self.duration_sec)
-        led.off()
-        print(f"GPIO LED pin {self.pin} OFF")
+        def _pulse() -> None:
+            with self._lock:
+                print(
+                    f"GPIO LED pin {self.pin} ON — keyword={keyword} "
+                    f"heard={transcript!r}"
+                )
+                self._led.on()
+                time.sleep(self.duration_sec)
+                self._led.off()
+                print(f"GPIO LED pin {self.pin} OFF")
+
+        threading.Thread(target=_pulse, daemon=True).start()
 
 
-def make_alert(backend: str, duration_sec: float = 4.0):
+def make_alert(backend: str, *, pin: int = 17, duration_sec: float = 4.0):
     if backend == "gpio":
-        return GpioAlert(duration_sec=duration_sec)
+        return GpioAlert(pin=pin, duration_sec=duration_sec)
     return SimulateAlert(duration_sec=duration_sec)

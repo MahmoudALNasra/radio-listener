@@ -1,0 +1,61 @@
+# Agent instructions (both PCs)
+
+Read this file **first** on any machine before changing the project.
+Keep it accurate: when you finish meaningful work, update **Status**, append **AGENT_LOG**, then commit + push if the user wants git updated.
+
+## Cross-PC rule
+
+Cursor Agent **chats do not sync** across PCs (same email does not matter).
+Shared truth lives in this **git repo**:
+
+- `AGENTS.md` — standing instructions (this file)
+- `docs/AGENT_LOG.md` — short running log of what changed
+- `README.md` + `docs/*` — how to run things
+
+**Every agent session that changes the project should:**
+1. Skim `AGENTS.md` + latest entries in `docs/AGENT_LOG.md`
+2. Do the work
+3. Update Status below + append a log entry
+4. Commit (and push when asked) — never commit secrets
+
+## Secrets (never commit)
+
+| File | Purpose |
+|------|---------|
+| `device/config.json` | device id, Supabase anon key, ntfy topic |
+| `web/.env.local` | Supabase + ntfy for Next.js |
+
+Use examples: `device/config.example.json`, `device/config.pi.example.json`, `web/.env.example`.
+
+## Stack
+
+| Piece | Notes |
+|-------|--------|
+| Device listener | `device/` Python + Vosk, Windows or Raspberry Pi 3B+ |
+| Web admin / phone | `web/` Next.js |
+| Backend | Supabase project **listener** `rkjokoykyyejclyxszsk` |
+| Alerts | Free **ntfy.sh** → iPhone app (not SMS yet) |
+| Repo | https://github.com/MahmoudALNasra/radio-listener |
+
+## Status (update when this changes)
+
+- **Supabase:** schema applied (profiles, devices, keywords, events, clips bucket + RLS)
+- **Pi software:** `setup_pi.sh`, systemd service, GPIO alert, USB mic `input_device` — ready to install once WiFi/SSH works
+- **Pi hardware:** user still setting up WiFi/SSH (may power from PC USB temporarily)
+- **ntfy:** wired in device sync + web phone uploads; topic lives only in local secret files
+- **LLM / addresses:** not built yet — plan free Gemini later for reason + address extraction
+- **SMS:** deferred; use ntfy for now
+
+## Next priorities
+
+1. Pi online (WiFi + SSH) → run `device/setup_pi.sh`, set mic + keys, test keyword → Supabase → ntfy
+2. Optional: Gemini free tier for related phrases + address parsing
+3. Optional: tighten ntfy (auth / self-host) before making topic public anywhere
+
+## Key docs
+
+- [docs/setup-raspberry-pi.md](docs/setup-raspberry-pi.md)
+- [docs/iphone-ntfy.md](docs/iphone-ntfy.md)
+- [docs/handoff-other-pc.md](docs/handoff-other-pc.md)
+- [docs/AGENT_LOG.md](docs/AGENT_LOG.md)
+- [docs/test-on-lenovo.md](docs/test-on-lenovo.md)

@@ -1,3 +1,4 @@
+import { sendNtfyEvent } from "./ntfy";
 import { supabase } from "./supabase";
 
 const DEVICE_KEY = "listener_phone_device_id";
@@ -75,6 +76,17 @@ export async function uploadPhoneEvent(opts: {
     .from("devices")
     .update({ last_seen: triggeredAt })
     .eq("id", opts.deviceId);
+
+  try {
+    await sendNtfyEvent({
+      keyword: opts.keyword,
+      transcript: opts.transcript,
+      deviceId: opts.deviceId,
+      triggeredAt,
+    });
+  } catch (err) {
+    console.warn("ntfy notify failed", err);
+  }
 
   return { storagePath, triggeredAt };
 }

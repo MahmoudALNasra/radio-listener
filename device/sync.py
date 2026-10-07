@@ -31,16 +31,45 @@ class SupabaseSync:
         anon_key: str,
         device_id: str,
         enabled: bool = False,
+        notifier: Any | None = None,
     ) -> None:
         self.url = (url or "").strip()
         self.anon_key = (anon_key or "").strip()
         self.device_id = device_id
         self.enabled = bool(enabled and self.url and self.anon_key)
+        self.notifier = notifier
         self._client = None
         if self.enabled:
             from supabase import create_client
 
             self._client = create_client(self.url, self.anon_key)
+
+    def ensure_device(self, name: str, audio_source: str = "cabin_mic") -> None:
+        if not self._client:
+            return
+        try:
+            self._client.table("devices").upsert(
+                {
+                    "id": self.device_id,
+                    "name": name,
+                    "audio_source": audio_source,
+                    "last_seen": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                }
+            ).execute()
+        except Exception as exc:
+            print(f"Device register failed: {exc}")
+
+    def touch_device(self) -> None:
+        if not self._client:
+            return
+        try:
+            self._client.table("devices").update(
+                {
+                    "last_seen": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                }
+            ).eq("id", self.device_id).execute()
+        except Exception as exc:
+            print(f"Device heartbeat failed: {exc}")
 
     def fetch_keywords(self) -> list[str] | None:
         if not self._client:
@@ -84,6 +113,13 @@ class SupabaseSync:
                     "triggered_at": triggered_at,
                 }
             ).execute()
+            if self.notifier is not None:
+                self.notifier.send_event(
+                    keyword=keyword,
+                    transcript=transcript,
+                    device_id=self.device_id,
+                    triggered_at=triggered_at,
+                )
             return True
         except Exception as exc:
             print(f"Upload failed: {exc}")

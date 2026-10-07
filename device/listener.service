@@ -1,0 +1,15 @@
+[Unit]
+Description=Radio keyword listener
+After=network-online.target sound.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/radio-listener/device
+ExecStart=/opt/radio-listener/device/.venv/bin/python listener.py
+Restart=on-failure
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

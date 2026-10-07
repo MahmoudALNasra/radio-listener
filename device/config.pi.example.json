@@ -1,6 +1,6 @@
 {
-  "device_id": "lenovo-dev-1",
-  "device_name": "Lenovo Test Rig",
+  "device_id": "pi-cabin-1",
+  "device_name": "Raspberry Pi 3B+",
   "audio_source": "cabin_mic",
   "input_device": null,
   "alert_backend": "simulate",
@@ -12,8 +12,8 @@
   "keyword_cooldown_sec": 8,
   "supabase_url": "https://rkjokoykyyejclyxszsk.supabase.co",
   "supabase_anon_key": "",
-  "sync_enabled": false,
-  "ntfy_enabled": false,
+  "sync_enabled": true,
+  "ntfy_enabled": true,
   "ntfy_server": "https://ntfy.sh",
   "ntfy_topic": ""
 }
