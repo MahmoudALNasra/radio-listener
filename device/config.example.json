@@ -1,0 +1,14 @@
+{
+  "device_id": "lenovo-dev-1",
+  "device_name": "Lenovo Test Rig",
+  "audio_source": "cabin_mic",
+  "alert_backend": "simulate",
+  "sample_rate": 16000,
+  "pre_roll_sec": 5,
+  "post_roll_sec": 5,
+  "keywords": ["crash", "accident", "rollover", "pileup"],
+  "keyword_cooldown_sec": 8,
+  "supabase_url": "",
+  "supabase_anon_key": "",
+  "sync_enabled": false
+}
