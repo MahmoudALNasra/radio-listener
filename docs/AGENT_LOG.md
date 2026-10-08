@@ -5,6 +5,12 @@ Agents on **any PC** read this after `AGENTS.md`.
 
 ---
 
+## 2026-10-08 — XTL 2500 direct-audio plan
+
+- Radio identified: Motorola XTL 2500 mobile `M21URM9PW1AN`
+- Added `docs/xtl2500-direct-audio.md`: rear 26-pin J2 pin 21 (fixed RX audio) + pin 14 → cap → isolator → UGREEN USB sound card; fallback speaker-wire LOC; shopping list with links/prices
+- Software follow-ups listed in the doc (audio gate, clip bracketing, level check)
+
 ## 2026-10-08 — Pi listening works; fix events RLS for anon upload
 
 - Pi hit keyword `crash`, saved local WAV; upload failed with events RLS 42501

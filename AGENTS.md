@@ -45,6 +45,7 @@ Use examples: `device/config.example.json`, `device/config.pi.example.json`, `we
 - **ntfy:** wired in device sync + web phone uploads; topic lives only in local secret files
 - **LLM / addresses:** not built yet — plan free Gemini later for reason + address extraction
 - **SMS:** deferred; use ntfy for now
+- **Radio direct audio:** user has Motorola XTL 2500 mobile (`M21URM9PW1AN`); plan + parts in `docs/xtl2500-direct-audio.md` (rear J2 pin 21/14 → USB sound card). Parts not ordered yet.
 
 ## Next priorities
 
@@ -59,3 +60,4 @@ Use examples: `device/config.example.json`, `device/config.pi.example.json`, `we
 - [docs/handoff-other-pc.md](docs/handoff-other-pc.md)
 - [docs/AGENT_LOG.md](docs/AGENT_LOG.md)
 - [docs/test-on-lenovo.md](docs/test-on-lenovo.md)
+- [docs/xtl2500-direct-audio.md](docs/xtl2500-direct-audio.md)
