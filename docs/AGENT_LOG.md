@@ -5,6 +5,12 @@ Agents on **any PC** read this after `AGENTS.md`.
 
 ---
 
+## 2026-10-08 — fix Vosk libvosk.so execstack on Pi
+
+- Pi error: `cannot enable executable stack` loading `libvosk.so` (Python 3.13 venv)
+- `setup_pi.sh` now installs `execstack` and clears the bit on `libvosk.so` after pip install
+- Documented one-liner fix in `docs/setup-raspberry-pi.md` troubleshooting
+
 ## 2026-10-08 — git pull on Pi boot
 
 - Added `device/update_from_git.sh` + `radio-listener-update.service` so each power-on pulls latest `main` before the listener starts

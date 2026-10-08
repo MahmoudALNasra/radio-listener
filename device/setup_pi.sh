@@ -13,7 +13,8 @@ sudo apt-get install -y \
   python3-dev \
   portaudio19-dev \
   libportaudio2 \
-  git
+  git \
+  execstack
 
 echo "==> Creating Python venv"
 python3 -m venv .venv
@@ -21,6 +22,14 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+
+# Newer Pi OS / kernels reject libs that request an executable stack.
+# Clear that flag on Vosk's native library (fixes: cannot enable executable stack).
+echo "==> Patching libvosk.so (clear execstack bit)"
+while IFS= read -r so; do
+  echo "    execstack -c $so"
+  execstack -c "$so" || sudo execstack -c "$so" || true
+done < <(find "$ROOT/.venv" -name 'libvosk.so' 2>/dev/null)
 
 if [[ ! -f config.json ]]; then
   echo "==> Creating config.json from Pi example"
