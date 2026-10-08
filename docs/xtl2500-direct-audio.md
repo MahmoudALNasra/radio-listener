@@ -1,9 +1,15 @@
 # Direct audio from the Motorola XTL 2500 (no cabin mic)
 
+> **Update 2026-10-08:** this is a **fixed indoor station**, not a vehicle install. The full
+> illustrated build guide (parts with pictures, power supply, antenna, step-by-step) is
+> [`xtl2500-build-guide.pdf`](xtl2500-build-guide.pdf); the session that produced it is
+> summarized in [`xtl2500-chat-2026-10-08.md`](xtl2500-chat-2026-10-08.md). The wiring
+> below is unchanged; "truck" references are historical.
+
 Radio: **Motorola XTL 2500**, model `M21URM9PW1AN` (700/800 MHz, 35 W, P25 digital + analog, mobile).
 
-Goal: feed what the radio *receives* straight into the listener (Lenovo PC for testing,
-Raspberry Pi in the truck) instead of listening through a microphone. The radio decodes
+Goal: feed what the radio *receives* straight into the listener (station PC or
+Raspberry Pi) instead of listening through a microphone. The radio decodes
 P25 itself, so what comes out is normal analog speech. `device/listener.py` does not change;
 only `input_device` in `device/config.json` points at the USB sound card.
 

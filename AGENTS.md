@@ -45,7 +45,7 @@ Use examples: `device/config.example.json`, `device/config.pi.example.json`, `we
 - **ntfy:** wired in device sync + web phone uploads; topic lives only in local secret files
 - **LLM / addresses:** not built yet — plan free Gemini later for reason + address extraction
 - **SMS:** deferred; use ntfy for now
-- **Radio direct audio:** user has Motorola XTL 2500 mobile (`M21URM9PW1AN`); plan + parts in `docs/xtl2500-direct-audio.md` (rear J2 pin 21/14 → USB sound card). Parts not ordered yet.
+- **Radio direct audio:** user has Motorola XTL 2500 mobile (`M21URM9PW1AN`), used as a **fixed indoor station** (not a vehicle). Full illustrated guide `docs/xtl2500-build-guide.pdf` (rear J2 pin 21/14 → HLN6863B → 2.2 µF → isolator → UGREEN USB; 13.8 V / 20 A supply + HKN4191C; 800 MHz mag-mount antenna). Notes in `docs/xtl2500-direct-audio.md`, session summary in `docs/xtl2500-chat-2026-10-08.md`. Parts not ordered yet.
 
 ## Next priorities
 
@@ -61,3 +61,5 @@ Use examples: `device/config.example.json`, `device/config.pi.example.json`, `we
 - [docs/AGENT_LOG.md](docs/AGENT_LOG.md)
 - [docs/test-on-lenovo.md](docs/test-on-lenovo.md)
 - [docs/xtl2500-direct-audio.md](docs/xtl2500-direct-audio.md)
+- [docs/xtl2500-build-guide.pdf](docs/xtl2500-build-guide.pdf) — illustrated station build guide (source: `docs/xtl2500-build-guide.html`)
+- [docs/xtl2500-chat-2026-10-08.md](docs/xtl2500-chat-2026-10-08.md) — decisions / Q&A from the guide session

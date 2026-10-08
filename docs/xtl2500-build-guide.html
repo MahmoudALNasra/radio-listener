@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Motorola XTL 2500 to PC — Direct Audio Build Guide</title>
+<style>
+  @page { size: letter; margin: 0.6in 0.65in; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; font-family: "Segoe UI", Calibri, Arial, sans-serif; font-size: 10.5pt; line-height: 1.4; color: #111; background: #fff; }
+  h1 { font-size: 20pt; margin: 0 0 4px; line-height: 1.2; }
+  h2 { font-size: 14pt; margin: 0 0 8px; padding-bottom: 4px; border-bottom: 2px solid #222; break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 14px 0 6px; break-after: avoid; }
+  p { margin: 4px 0 8px; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 9pt; background: #f1f1f1; padding: 0 3px; border-radius: 2px; }
+  .sub { color: #444; font-size: 10pt; margin-bottom: 14px; }
+  .section { break-before: page; }
+  .section.first { break-before: auto; }
+  .note { border: 1px solid #999; background: #f6f6f6; padding: 8px 10px; margin: 8px 0 12px; break-inside: avoid; }
+  .warn { border: 1.5px solid #b00000; background: #fff3f3; padding: 8px 10px; margin: 8px 0 12px; break-inside: avoid; }
+  .warn strong { color: #b00000; }
+  .two { display: flex; gap: 14px; align-items: flex-start; }
+  .two > * { flex: 1 1 0; min-width: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 12px; font-size: 9.5pt; }
+  th, td { border: 1px solid #555; padding: 4px 6px; vertical-align: top; text-align: left; }
+  th { background: #e9e9e9; }
+  tr { break-inside: avoid; }
+  .parts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .part { border: 1px solid #777; border-radius: 4px; padding: 8px; break-inside: avoid; display: flex; gap: 10px; }
+  .part img { width: 118px; height: 118px; object-fit: contain; background: #fff; border: 1px solid #ddd; flex: 0 0 auto; }
+  .part .txt { min-width: 0; font-size: 9.3pt; }
+  .part .tag { display: inline-block; font-weight: 700; background: #222; color: #fff; border-radius: 3px; padding: 0 6px; margin-right: 4px; font-size: 9pt; }
+  .part .name { font-weight: 700; font-size: 10pt; }
+  .part .row { margin-top: 3px; }
+  .part .k { color: #555; }
+  .photo { position: relative; width: 100%; }
+  .photo img { width: 100%; display: block; border: 1px solid #999; }
+  .mark { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: #ffd400; color: #000; border: 2px solid #000; font-weight: 700; text-align: center; line-height: 20px; font-size: 11pt; }
+  .steps { counter-reset: step; }
+  .step { break-inside: avoid; border-left: 4px solid #222; padding: 4px 10px 6px; margin: 0 0 10px; }
+  .step h4 { margin: 0 0 4px; font-size: 10.5pt; }
+  .step h4::before { counter-increment: step; content: "Step " counter(step) " — "; }
+  .step ul { margin: 2px 0 2px 18px; padding: 0; }
+  .step li { margin: 2px 0; }
+  .fig { break-inside: avoid; margin: 8px 0 12px; }
+  .fig svg { width: 100%; height: auto; display: block; }
+  .cap { font-size: 9pt; color: #444; margin-top: 3px; }
+  .small { font-size: 9pt; color: #444; }
+  .kbd { font-weight: 700; }
+  .chk li { margin: 3px 0; }
+</style>
+</head>
+<body>
+
+<!-- ============================ PAGE 1: OVERVIEW ============================ -->
+<div class="section first">
+  <h1>Motorola XTL 2500 → PC Direct Audio</h1>
+  <div class="sub">Fixed receive station (indoor, not a vehicle). Parts, pictures, what plugs into what, and step‑by‑step instructions. Radio model M21URM9PW1AN (700/800 MHz, 35 W). October 2026.</div>
+
+  <p><strong>What you are building.</strong> A listening station. The radio sits indoors on a desk or shelf, receives the P25 traffic and decodes it to normal speech. That speech leaves the radio through a <strong>wire</strong> on its rear accessory socket (not through a microphone), goes into a USB sound card, and the PC (or Raspberry Pi) turns it into text and fires your triggers. The radio never needs to transmit for this.</p>
+
+  <div class="note">
+    <strong>There are two completely separate systems.</strong><br>
+    <strong>1. POWER</strong> — wall outlet → 13.8 V power supply → Motorola power cable → radio. <em>The radio cannot be powered from USB.</em> At a station the supply runs all the time.<br>
+    <strong>2. AUDIO</strong> — radio rear socket → HLN6863B plug → capacitor → 3.5 mm cable → ground‑loop isolator → USB sound card → PC.
+  </div>
+
+  <div class="fig">
+    <svg viewBox="0 0 700 500" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+      <defs>
+        <marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#222"/>
+        </marker>
+      </defs>
+      <!-- POWER column -->
+      <text x="160" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#b00000">POWER (12–13.8 V DC)</text>
+      <g stroke="#222" stroke-width="1.5" fill="#fff">
+        <rect x="20" y="40" width="280" height="50" rx="6"/>
+        <rect x="20" y="130" width="280" height="50" rx="6"/>
+        <rect x="20" y="220" width="280" height="50" rx="6"/>
+        <rect x="20" y="310" width="280" height="50" rx="6" fill="#eee"/>
+      </g>
+      <g font-size="13" font-weight="700" fill="#111" text-anchor="middle">
+        <text x="160" y="60">Wall outlet</text>
+        <text x="160" y="150">A · 13.8 V DC power supply</text>
+        <text x="160" y="240">B · Motorola power cable HKN4191C</text>
+        <text x="160" y="330">RADIO — rear POWER socket</text>
+      </g>
+      <g font-size="11" fill="#444" text-anchor="middle">
+        <text x="160" y="78">120 V AC</text>
+        <text x="160" y="168">20 A or more, red (+) and black (−) posts</text>
+        <text x="160" y="258">red → +, black → −, 2‑pin plug to radio</text>
+        <text x="160" y="348">marker 2 in the photo on the next page</text>
+      </g>
+      <g stroke="#222" stroke-width="2" fill="none" marker-end="url(#ar)">
+        <path d="M160 90 L160 128"/>
+        <path d="M160 180 L160 218"/>
+        <path d="M160 270 L160 308"/>
+      </g>
+      <text x="160" y="392" text-anchor="middle" font-size="11" fill="#444">Also: HLN6863B red ignition wire → supply (+)</text>
+      <text x="160" y="408" text-anchor="middle" font-size="11" fill="#444">(radio often will not switch on without it)</text>
+      <text x="160" y="440" text-anchor="middle" font-size="11" fill="#444">Radio draw: 0.85 A idle · 3.2 A receiving · 12 A transmitting</text>
+
+      <!-- AUDIO column -->
+      <text x="540" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#0b4fa8">AUDIO (radio → PC)</text>
+      <g stroke="#222" stroke-width="1.5" fill="#fff">
+        <rect x="400" y="40" width="280" height="44" rx="6" fill="#eee"/>
+        <rect x="400" y="104" width="280" height="44" rx="6"/>
+        <rect x="400" y="168" width="280" height="44" rx="6"/>
+        <rect x="400" y="232" width="280" height="44" rx="6"/>
+        <rect x="400" y="296" width="280" height="44" rx="6"/>
+        <rect x="400" y="360" width="280" height="44" rx="6"/>
+        <rect x="400" y="424" width="280" height="44" rx="6" fill="#eee"/>
+      </g>
+      <g font-size="13" font-weight="700" fill="#111" text-anchor="middle">
+        <text x="540" y="58">RADIO — rear J2 socket (26 holes)</text>
+        <text x="540" y="122">C · HLN6863B plug  +  D · 2 crimp pins</text>
+        <text x="540" y="186">E · 2.2 µF capacitor (on the pin‑21 wire)</text>
+        <text x="540" y="250">F · 3.5 mm cable (cut end wired into C)</text>
+        <text x="540" y="314">G · Ground‑loop isolator</text>
+        <text x="540" y="378">H · USB sound card — RED jack</text>
+        <text x="540" y="442">I · PC or Raspberry Pi — USB port</text>
+      </g>
+      <g font-size="11" fill="#444" text-anchor="middle">
+        <text x="540" y="75">audio out = hole 21 · ground = hole 14 · marker 3</text>
+        <text x="540" y="139">pins go in holes 21 and 14 of the HLN6863B housing</text>
+        <text x="540" y="203">blocks the DC voltage that sits on pin 21</text>
+        <text x="540" y="267">tip = pin 21 wire, sleeve = pin 14 wire</text>
+        <text x="540" y="331">stops alternator whine / hum</text>
+        <text x="540" y="395">the red jack is just the input port, not a “mic”</text>
+        <text x="540" y="459">Windows input device = “USB Audio Device”</text>
+      </g>
+      <g stroke="#0b4fa8" stroke-width="2.5" fill="none" marker-end="url(#ar)">
+        <path d="M540 84 L540 102"/>
+        <path d="M540 148 L540 166"/>
+        <path d="M540 212 L540 230"/>
+        <path d="M540 276 L540 294"/>
+        <path d="M540 340 L540 358"/>
+        <path d="M540 404 L540 422"/>
+      </g>
+    </svg>
+    <div class="cap">Figure 1. Everything in one picture. Letters A–I match the parts list. Blue arrows are the audio path.</div>
+  </div>
+</div>
+
+<!-- ============================ PAGE 2: YOUR RADIO ============================ -->
+<div class="section">
+  <h2>1. Your radio — where things plug in</h2>
+  <p>This is the back of your XTL 2500. Only two sockets matter for this build: the <strong>POWER</strong> socket (2) and the <strong>J2 accessory</strong> socket (3). The antenna (1) must also be connected for the radio to receive.</p>
+
+  <div class="fig">
+    <div class="photo">
+      <img src="xtl2500-parts/00-your-xtl2500-rear.png" alt="Rear of the XTL 2500">
+      <div class="mark" style="left:24.5%; top:56%;">1</div>
+      <div class="mark" style="left:67.7%; top:55%;">2</div>
+      <div class="mark" style="left:76.5%; top:52%;">3</div>
+    </div>
+    <table>
+      <tr><th style="width:36px">#</th><th style="width:170px">Socket</th><th>What plugs in</th></tr>
+      <tr><td><strong>1</strong></td><td>Antenna (mini‑UHF)</td><td>Part <strong>J</strong>, a 700/800 MHz antenna. Indoors: a mag‑mount on a steel plate near a window. The radio hears nothing without it.</td></tr>
+      <tr><td><strong>2</strong></td><td>POWER (2‑pin)</td><td>Part <strong>B</strong>, the Motorola power cable HKN4191C. Comes from the 13.8 V supply (part <strong>A</strong>).</td></tr>
+      <tr><td><strong>3</strong></td><td>J2 accessory (26 holes)</td><td>Part <strong>C</strong>, the HLN6863B plug. Audio for the PC comes out of <strong>hole 21</strong>; <strong>hole 14</strong> is its ground.</td></tr>
+    </table>
+    <div class="cap">Figure 2. Rear of your radio. “J2” is simply Motorola’s name for socket 3. “Pin 21 / pin 14” are two of the 26 holes inside it.</div>
+  </div>
+
+  <div class="two">
+    <div>
+      <img src="xtl2500-parts/00-your-xtl2500-front.png" alt="Front of the XTL 2500" style="width:100%; border:1px solid #999;">
+      <div class="cap">Figure 3. Front. The round jack at bottom‑left is for the hand microphone — <strong>not used</strong> for the PC. The power button (⏻) is the third small round button left of the display.</div>
+    </div>
+    <div>
+      <div class="warn">
+        <strong>Never do these</strong>
+        <ul style="margin:4px 0 0 18px; padding:0;">
+          <li>Never put a wire in holes <strong>20</strong> or <strong>26</strong> (speaker) and never let them touch ground. That destroys the radio’s audio amplifier.</li>
+          <li>Never touch the J2 socket or plug while the radio has power.</li>
+          <li>Never power the radio from a USB port, phone charger or small wall adapter. It needs 12–13.8 V and up to 12 A.</li>
+          <li>Never press the microphone PTT (transmit) without an antenna connected.</li>
+        </ul>
+      </div>
+      <div class="note">
+        <strong>Why hole 21?</strong> It is “RX filtered audio” — a fixed‑level copy of whatever the radio receives. It ignores the volume knob, so the station needs no speaker at all; the PC still hears everything.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ PAGE 3: PARTS ============================ -->
+<div class="section">
+  <h2>2. Parts to buy (with pictures)</h2>
+  <p class="small">Prices are October 2026, US. “Search” is the exact text to type into Amazon / eBay / Google.</p>
+
+  <h3>Power</h3>
+  <div class="parts">
+    <div class="part">
+      <img src="xtl2500-parts/08-138v-power-supply.jpg" alt="13.8 V power supply">
+      <div class="txt">
+        <span class="tag">A</span><span class="name">13.8 V DC power supply, 20 A or more</span>
+        <div class="row"><span class="k">Search:</span> <code>13.8V 25A power supply ham radio</code> — e.g. Samlex SEC‑1223 (23 A), Astron SS‑30M, Pyramid PS26KX</div>
+        <div class="row"><span class="k">Price:</span> $70–160</div>
+        <div class="row"><span class="k">Connects to:</span> wall outlet (AC in) → part B on its red/black posts</div>
+        <div class="row"><span class="k">Why:</span> receiving takes 3.2 A, but a radio on a trunked system sends short automatic registration bursts at 12 A. 20 A keeps the voltage steady during those.</div>
+      </div>
+    </div>
+    <div class="part">
+      <img src="xtl2500-parts/09-motorola-power-cable-hkn4191.jpg" alt="Motorola HKN4191C power cable">
+      <div class="txt">
+        <span class="tag">B</span><span class="name">Motorola power cable HKN4191C</span>
+        <div class="row"><span class="k">Search:</span> <code>HKN4191C</code> (10 ft, 12 AWG, 20 A fuse). 20 ft version: <code>HKN4192C</code>.</div>
+        <div class="row"><span class="k">Price:</span> ~$28</div>
+        <div class="row"><span class="k">Connects to:</span> 2‑pin plug → radio POWER socket (2). Bare ends → red (+) / black (−) posts on part A.</div>
+        <div class="row"><span class="k">Why:</span> it is the only plug that fits the radio’s power socket, and it carries the fuse.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Audio — radio side</h3>
+  <div class="parts">
+    <div class="part">
+      <img src="xtl2500-parts/02-hln6863b-real-product.jpg" alt="Motorola HLN6863B">
+      <div class="txt">
+        <span class="tag">C</span><span class="name">Motorola HLN6863B rear accessory connector</span>
+        <div class="row"><span class="k">Search:</span> <code>HLN6863B</code> (also HLN6863 / HLN6863A). “Mid‑power rear ignition cable, XTL APX”.</div>
+        <div class="row"><span class="k">Price:</span> $39–44 new (North Georgia Comm., Atlantic Radio, Magnum), ~$12 used on eBay</div>
+        <div class="row"><span class="k">Connects to:</span> the black block plugs onto radio socket J2 (3). Its red fused wire → supply (+) (ignition sense).</div>
+        <div class="row"><span class="k">Why:</span> it is the plug that fits J2. You add two pins (part D) for the PC audio.</div>
+      </div>
+    </div>
+    <div class="part">
+      <img src="xtl2500-parts/03-crimp-pins.jpg" alt="Crimp pins">
+      <div class="txt">
+        <span class="tag">D</span><span class="name">Crimp pins for the HLN6863B housing (need 2, buy 4)</span>
+        <div class="row"><span class="k">Search:</span> <code>3980034F01</code> or <code>3980034F04</code> (Wiscomm ~$1.40 each) — or eBay <code>HLN6961 XTL APX accessory connector pins</code></div>
+        <div class="row"><span class="k">Price:</span> ~$6</div>
+        <div class="row"><span class="k">Connects to:</span> crimped onto the two wires of part F, then pushed into holes 21 and 14 of part C.</div>
+        <div class="row"><span class="k">Why:</span> ordinary D‑sub pins do not fit this housing.</div>
+      </div>
+    </div>
+    <div class="part">
+      <img src="xtl2500-parts/04-2u2-bipolar-capacitor.jpg" alt="2.2 uF bipolar capacitor">
+      <div class="txt">
+        <span class="tag">E</span><span class="name">2.2 µF non‑polarized (bipolar) capacitor, 50 V</span>
+        <div class="row"><span class="k">Search:</span> <code>2.2uF bipolar capacitor 50V</code> (bag of 10–20). A <code>2.2uF film capacitor</code> also works.</div>
+        <div class="row"><span class="k">Price:</span> ~$6</div>
+        <div class="row"><span class="k">Connects to:</span> spliced <em>into</em> the pin‑21 (signal) wire between part C and the 3.5 mm plug. Not on the ground wire.</div>
+        <div class="row"><span class="k">Why:</span> pin 21 carries a DC voltage with the audio; the capacitor lets audio through and blocks the DC.</div>
+      </div>
+    </div>
+    <div class="part">
+      <img src="xtl2500-parts/06-35mm-trs-cable.jpg" alt="3.5 mm TRS cable">
+      <div class="txt">
+        <span class="tag">F</span><span class="name">Shielded 3.5 mm TRS cable, 3–6 ft (you cut one end off)</span>
+        <div class="row"><span class="k">Search:</span> <code>3.5mm TRS male to male shielded audio cable 6ft</code></div>
+        <div class="row"><span class="k">Price:</span> ~$7</div>
+        <div class="row"><span class="k">Connects to:</span> cut end → pins (D) → HLN6863B holes 21/14. Plug end → isolator (G).</div>
+        <div class="row"><span class="k">Why:</span> gives you a ready‑made 3.5 mm plug and shielded wire in one buy.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Audio — PC side</h3>
+  <div class="parts">
+    <div class="part">
+      <img src="xtl2500-parts/05-ground-loop-isolator.jpg" alt="Ground loop isolator">
+      <div class="txt">
+        <span class="tag">G</span><span class="name">3.5 mm ground‑loop isolator</span>
+        <div class="row"><span class="k">Search:</span> <code>Cable Matters 3.5mm ground loop isolator</code> (Amazon B08G9J74VX)</div>
+        <div class="row"><span class="k">Price:</span> ~$12</div>
+        <div class="row"><span class="k">Connects to:</span> 3.5 mm plug of part F goes in one end; other end goes into the RED jack of part H.</div>
+        <div class="row"><span class="k">Why:</span> radio and PC are on different grounds; without it you get a loud hum / alternator whine.</div>
+      </div>
+    </div>
+    <div class="part">
+      <img src="xtl2500-parts/07-ugreen-usb-audio.jpg" alt="UGREEN USB audio adapter">
+      <div class="txt">
+        <span class="tag">H</span><span class="name">USB sound card — UGREEN 30724</span>
+        <div class="row"><span class="k">Search:</span> <code>UGREEN USB audio adapter 30724</code> (Amazon B01N905VOY). Alternative with true line‑in: Behringer UCA202 (~$30).</div>
+        <div class="row"><span class="k">Price:</span> ~$10</div>
+        <div class="row"><span class="k">Connects to:</span> isolator (G) → <strong>RED</strong> jack. USB end → PC / Pi.</div>
+        <div class="row"><span class="k">Why:</span> turns the audio wire into a USB input device. No drivers on Windows or Pi.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Antenna</h3>
+  <div class="parts">
+    <div class="part">
+      <img src="xtl2500-parts/10-800mhz-mag-mount-antenna.jpg" alt="800 MHz mag-mount antenna">
+      <div class="txt">
+        <span class="tag">J</span><span class="name">700/800 MHz antenna with mini‑UHF plug</span>
+        <div class="row"><span class="k">Search:</span> <code>800 MHz mag mount antenna mini-UHF</code> (Laird, Tram, Browning, ~$20–35). Put the magnet on a steel plate or cookie sheet (ground plane) near a window.</div>
+        <div class="row"><span class="k">Better reception:</span> outdoor 800 MHz base antenna + <code>mini-UHF male to N female adapter</code>.</div>
+        <div class="row"><span class="k">Connects to:</span> radio antenna socket (1).</div>
+        <div class="row"><span class="k">Why:</span> no antenna = nothing to transcribe. Higher and closer to a window = more traffic heard.</div>
+      </div>
+    </div>
+    <div class="part" style="border-style:dashed;">
+      <div class="txt">
+        <span class="name">Optional: speaker for the room</span>
+        <div class="row">The XTL 2500 has no built‑in speaker. The PC does not need one. If you also want to hear traffic in the room, a Motorola external speaker (e.g. <code>HSN4031</code>) goes on the speaker leads already in the HLN6863B — not on holes 21/14.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Tools and small stuff</h3>
+  <table>
+    <tr><th style="width:220px">Item</th><th>Notes</th></tr>
+    <tr><td>Wire stripper / cutter</td><td>For the thin 3.5 mm cable (22–26 AWG).</td></tr>
+    <tr><td>Small needle‑nose pliers or crimp tool</td><td>To close the crimp pins (D). Pliers work if you squeeze carefully.</td></tr>
+    <tr><td>Soldering iron + solder (or 2 small butt‑splice crimps)</td><td>To join the capacitor into the wire. Twist‑and‑tape is fine for a first test; solder it for the permanent station.</td></tr>
+    <tr><td>Heat‑shrink tubing or electrical tape</td><td>Cover the capacitor joints so they cannot touch anything.</td></tr>
+    <tr><td>Multimeter (~$15, strongly recommended)</td><td>To confirm which wire is tip and which is sleeve, and to check the supply voltage.</td></tr>
+    <tr><td>Steel plate / cookie sheet</td><td>Ground plane for the mag‑mount antenna. About 12 × 12 in.</td></tr>
+  </table>
+
+  <p class="small"><strong>Cost:</strong> audio parts ≈ $80 (≈ $50 with a used HLN6863B). Power supply + cable ≈ $100–190. Antenna ≈ $25–35.</p>
+</div>
+
+<!-- ============================ PAGE 4: CONNECTION MAP ============================ -->
+<div class="section">
+  <h2>3. Connection map — what touches what</h2>
+  <table>
+    <tr><th style="width:34px">#</th><th style="width:220px">This…</th><th style="width:200px">…plugs into / joins…</th><th>Details</th></tr>
+    <tr><td>1</td><td>Power supply <strong>A</strong> — AC cord</td><td>Wall outlet</td><td>Keep the supply switched OFF until step 11.</td></tr>
+    <tr><td>2</td><td>Power cable <strong>B</strong> — bare RED end</td><td>Supply <strong>A</strong> — red (+) post</td><td>Fuse holder stays on the red wire.</td></tr>
+    <tr><td>3</td><td>Power cable <strong>B</strong> — bare BLACK end</td><td>Supply <strong>A</strong> — black (−) post</td><td></td></tr>
+    <tr><td>4</td><td>Power cable <strong>B</strong> — 2‑pin plug</td><td>Radio POWER socket (2)</td><td>Fits one way only; push until it latches.</td></tr>
+    <tr><td>5</td><td>HLN6863B <strong>C</strong> — black block</td><td>Radio J2 socket (3)</td><td>Only after the pins (D) are installed. Tighten its screw.</td></tr>
+    <tr><td>6</td><td>HLN6863B <strong>C</strong> — red fused “ignition” wire</td><td>Supply <strong>A</strong> — red (+) post</td><td>Tells the radio “the vehicle is on”. At a station it just stays on the (+) post permanently.</td></tr>
+    <tr><td>7</td><td>3.5 mm cable <strong>F</strong> — inner (signal) wire</td><td>Capacitor <strong>E</strong> — lead 1</td><td>Cut the signal wire; capacitor bridges the cut.</td></tr>
+    <tr><td>8</td><td>Capacitor <strong>E</strong> — lead 2</td><td>Crimp pin <strong>D</strong> → HLN6863B hole <strong>21</strong></td><td>Either lead can face the radio (bipolar).</td></tr>
+    <tr><td>9</td><td>3.5 mm cable <strong>F</strong> — shield (ground) wire</td><td>Crimp pin <strong>D</strong> → HLN6863B hole <strong>14</strong></td><td>No capacitor on this wire.</td></tr>
+    <tr><td>10</td><td>3.5 mm cable <strong>F</strong> — plug end</td><td>Isolator <strong>G</strong> — female end</td><td></td></tr>
+    <tr><td>11</td><td>Isolator <strong>G</strong> — male plug</td><td>USB sound card <strong>H</strong> — RED jack</td><td>Red = input. Green = headphones (not used).</td></tr>
+    <tr><td>12</td><td>USB sound card <strong>H</strong> — USB‑A</td><td>PC / Raspberry Pi <strong>I</strong></td><td>Shows up as “USB Audio Device”.</td></tr>
+    <tr><td>13</td><td>Antenna <strong>J</strong> — mini‑UHF plug</td><td>Radio antenna socket (1)</td><td>Mag‑mount on a steel plate by a window; or outdoor antenna via adapter.</td></tr>
+  </table>
+
+  <div class="fig">
+    <svg viewBox="0 0 700 262" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+      <!-- HLN6863B housing -->
+      <rect x="20" y="40" width="130" height="182" rx="8" fill="#eee" stroke="#222" stroke-width="1.5"/>
+      <text x="85" y="66" text-anchor="middle" font-size="13" font-weight="700">HLN6863B</text>
+      <text x="85" y="82" text-anchor="middle" font-size="11" fill="#444">plug (part C)</text>
+      <text x="85" y="98" text-anchor="middle" font-size="10" fill="#444">numbers are molded</text>
+      <text x="85" y="111" text-anchor="middle" font-size="10" fill="#444">into the plastic</text>
+      <!-- holes -->
+      <circle cx="150" cy="140" r="7" fill="#fff" stroke="#0b4fa8" stroke-width="2"/>
+      <text x="128" y="144" text-anchor="end" font-size="12" font-weight="700" fill="#0b4fa8">hole 21</text>
+      <circle cx="150" cy="202" r="7" fill="#fff" stroke="#555" stroke-width="2"/>
+      <text x="128" y="206" text-anchor="end" font-size="12" font-weight="700" fill="#555">hole 14</text>
+      <!-- signal wire -->
+      <path d="M157 140 H300" stroke="#0b4fa8" stroke-width="3" fill="none"/>
+      <path d="M380 140 H540" stroke="#0b4fa8" stroke-width="3" fill="none"/>
+      <!-- capacitor symbol -->
+      <rect x="305" y="118" width="70" height="44" rx="6" fill="#fff" stroke="#222" stroke-width="1.5"/>
+      <path d="M300 140 H328 M352 140 H380" stroke="#0b4fa8" stroke-width="3" fill="none"/>
+      <path d="M333 126 V154 M347 126 V154" stroke="#222" stroke-width="3" fill="none"/>
+      <text x="340" y="108" text-anchor="middle" font-size="12" font-weight="700">E · 2.2 µF capacitor</text>
+      <text x="340" y="176" text-anchor="middle" font-size="10" fill="#444">spliced into the signal wire · either way round</text>
+      <!-- ground wire -->
+      <path d="M157 202 H540" stroke="#555" stroke-width="3" fill="none"/>
+      <text x="348" y="220" text-anchor="middle" font-size="10" fill="#444">ground wire (shield) — straight through, no capacitor</text>
+      <!-- 3.5 mm plug -->
+      <rect x="540" y="124" width="60" height="92" rx="6" fill="#222"/>
+      <rect x="600" y="159" width="26" height="22" fill="#999" stroke="#222"/>
+      <rect x="626" y="159" width="10" height="22" fill="#222"/>
+      <rect x="636" y="159" width="22" height="22" fill="#999" stroke="#222"/>
+      <rect x="658" y="159" width="10" height="22" fill="#222"/>
+      <path d="M668 159 h14 a11 11 0 0 1 0 22 h-14 z" fill="#999" stroke="#222"/>
+      <text x="570" y="114" text-anchor="middle" font-size="12" font-weight="700">F · 3.5 mm plug</text>
+      <text x="613" y="152" text-anchor="middle" font-size="9" fill="#444">sleeve</text>
+      <text x="647" y="152" text-anchor="middle" font-size="9" fill="#444">ring</text>
+      <text x="679" y="152" text-anchor="middle" font-size="9" fill="#444">tip</text>
+      <text x="622" y="196" text-anchor="middle" font-size="9" fill="#555">= hole 14</text>
+      <text x="672" y="196" text-anchor="middle" font-size="9" fill="#0b4fa8">= hole 21</text>
+      <!-- arrows to next -->
+      <text x="610" y="246" text-anchor="middle" font-size="11" fill="#444">→ isolator G → RED jack on H → PC</text>
+      <!-- labels -->
+      <text x="230" y="130" text-anchor="middle" font-size="11" fill="#0b4fa8" font-weight="700">signal wire (from hole 21)</text>
+      <text x="20" y="246" font-size="11" fill="#444">Plugs onto radio socket J2 (marker 3)</text>
+    </svg>
+    <div class="cap">Figure 4. The one cable you build. Blue = signal from hole 21, through the capacitor, to the plug’s tip. Grey = ground from hole 14 straight to the plug’s sleeve. If your cable has two inner wires (stereo), twist them together and treat them as one signal wire.</div>
+  </div>
+</div>
+
+<!-- ============================ PAGE 5+: STEPS ============================ -->
+<div class="section steps">
+  <h2>4. Step‑by‑step build</h2>
+
+  <h3>Part A — Build the audio cable (nothing plugged in yet)</h3>
+
+  <div class="step">
+    <h4>Cut the 3.5 mm cable</h4>
+    <ul>
+      <li>Measure about <strong>18 inches</strong> from one plug and cut the cable there. You will use that 18‑inch piece (one plug + wire). The rest is spare.</li>
+      <li>Strip <strong>1 inch</strong> of the outer black jacket from the cut end. Be gentle — the wires inside are thin.</li>
+      <li>Inside you will find a <strong>bare braided or foil shield</strong> wrapped around <strong>one or two insulated wires</strong> (often red and white).</li>
+      <li>Twist the shield strands together into one wire. If there are two insulated wires, strip ¼ in from each and twist them together — they become one <strong>signal</strong> wire.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <h4>Confirm which wire is which (multimeter, continuity / beep mode)</h4>
+    <ul>
+      <li>One probe on the plug’s <strong>tip</strong> (the very end), other probe on the <strong>signal</strong> wire → it should beep.</li>
+      <li>One probe on the plug’s <strong>sleeve</strong> (the long metal part next to the cable), other probe on the <strong>shield</strong> wire → beep.</li>
+      <li>Signal to shield → <strong>no</strong> beep. If it beeps, strands are touching; separate them.</li>
+      <li>No multimeter? The shield is always the bare braid; the insulated wires are always signal.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <h4>Splice the 2.2 µF capacitor into the signal wire</h4>
+    <ul>
+      <li>About <strong>3 inches</strong> from the cut end, cut the <strong>signal wire only</strong>. Strip ¼ in from both new ends. Leave the shield wire whole.</li>
+      <li>Slide a piece of heat‑shrink onto each end before joining (easy to forget).</li>
+      <li>Twist one capacitor lead onto one cut end, the other lead onto the other cut end. Solder both joints (or use two small butt‑splice crimps). Trim the leads short.</li>
+      <li>Direction does <strong>not</strong> matter — a bipolar capacitor has no + or −.</li>
+      <li>Shrink or tape each joint so no bare metal is exposed. The capacitor is now “in series on pin 21”, exactly as the notes say.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <h4>Crimp the two Motorola pins</h4>
+    <ul>
+      <li>Strip ⅛–3/16 in of insulation from the end of the signal wire (the end past the capacitor) and from the shield wire.</li>
+      <li>Lay the bare copper in the small barrel of a pin; fold the small tabs over the copper, then the larger tabs over the insulation. Squeeze firmly with the crimp tool or pliers.</li>
+      <li>Pull gently on each wire. If a pin slides off, re‑crimp. A dab of solder on the copper crimp adds strength.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <h4>Push the pins into the HLN6863B housing</h4>
+    <ul>
+      <li>Look at the <strong>wire side</strong> (back) of the black HLN6863B block. Tiny numbers are molded next to the holes. Find <strong>21</strong> and <strong>14</strong>. Some positions already have wires (ignition, speaker) — leave them alone.</li>
+      <li>Push the <strong>signal</strong> pin into hole <strong>21</strong> until it clicks. Push the <strong>shield</strong> pin into hole <strong>14</strong> until it clicks.</li>
+      <li>Tug each wire lightly — it must not come back out.</li>
+      <li>Check with the meter: signal pin ↔ plug tip = <strong>no beep</strong> (the capacitor blocks DC — that is correct); shield pin ↔ plug sleeve = beep.</li>
+    </ul>
+  </div>
+
+  <h3>Part B — Plug everything into the radio (power still OFF)</h3>
+
+  <div class="step">
+    <h4>Connect the HLN6863B to the radio</h4>
+    <ul>
+      <li>Push the HLN6863B block onto the <strong>J2 socket</strong> (marker 3, far right on the back of the radio). It only goes on one way. Tighten its screw finger‑tight.</li>
+      <li>Keep the 3.5 mm plug end free for now. Do not plug it into anything that is powered.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <h4>Connect the power cable to the radio</h4>
+    <ul>
+      <li>Push the 2‑pin plug of the HKN4191C into the <strong>POWER socket</strong> (marker 2) until it latches.</li>
+      <li>Check the fuse holder on the red wire has its 20 A fuse in it.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <h4>Connect the antenna</h4>
+    <ul>
+      <li>Put the mag‑mount on the steel plate, as high and as close to a window as the cable allows (away from the PC and the power supply).</li>
+      <li>Screw its mini‑UHF plug onto the antenna socket (marker 1). Finger‑tight is enough. Without an antenna you will hear almost nothing.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <h4>Build the chain to the PC</h4>
+    <ul>
+      <li>3.5 mm plug (from Part A) → <strong>female</strong> end of the ground‑loop isolator.</li>
+      <li>Isolator <strong>male</strong> plug → <strong>RED</strong> jack of the UGREEN adapter. (Green is for headphones — ignore it.)</li>
+      <li>UGREEN USB end → any USB port on the PC / Pi.</li>
+    </ul>
+  </div>
+
+  <h3>Part C — Power up</h3>
+
+  <div class="step">
+    <h4>Wire the power supply (supply switched OFF)</h4>
+    <ul>
+      <li>HKN4191C <strong>red</strong> bare end → supply <strong>red (+)</strong> post. <strong>Black</strong> bare end → supply <strong>black (−)</strong> post.</li>
+      <li>HLN6863B <strong>red fused ignition wire</strong> → also onto the supply <strong>red (+)</strong> post (two wires on the same post is fine). This is the “ignition sense” the radio looks for.</li>
+      <li>Plug the supply into the wall.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <h4>Switch on</h4>
+    <ul>
+      <li>Switch the supply on. The meter (or a multimeter on the posts) should read about <strong>13.8 V</strong>.</li>
+      <li>Press the radio’s <strong>power button</strong> (⏻, third small button left of the display). Display lights, radio beeps.</li>
+      <li>Select the channel / talkgroup you want to monitor. The volume knob does not matter for the PC — pin 21 is fixed level.</li>
+    </ul>
+  </div>
+
+  <h3>Part D — PC setup</h3>
+
+  <div class="step">
+    <h4>Windows (station PC)</h4>
+    <ul>
+      <li><span class="kbd">Settings → System → Sound → Input</span>. Choose <strong>USB Audio Device</strong> (sometimes “USB PnP Sound Device”).</li>
+      <li>Set input volume to about <strong>30 %</strong> to start. If there is a “Microphone boost” option under device properties, set it to <strong>0 dB</strong>.</li>
+      <li>Watch the input level meter during a transmission. It should bounce clearly but <strong>not</strong> hit the top. Raise or lower the input volume until it peaks around ⅔.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <h4>Point the listener at the USB device</h4>
+    <ul>
+      <li>In <code>device/config.json</code> set <code>input_device</code> to the USB Audio Device (name or index — whatever your listener accepts).</li>
+      <li>Run <code>python listener.py</code>. Check its level readout during a transmission; adjust the Windows input volume if it clips.</li>
+      <li>Raspberry Pi: <code>arecord -l</code> lists the card number of the USB device; put that in <code>config.json</code> the same way.</li>
+      <li>For a station that runs unattended, set the listener to start automatically at login (Task Scheduler on Windows, a systemd service on the Pi).</li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <strong>Station notes</strong>
+    <ul style="margin:4px 0 0 18px; padding:0;">
+      <li><strong>Placement:</strong> radio on a hard surface with air around the heat‑sink fins; antenna by a window; supply and PC on the same power strip (less hum).</li>
+      <li><strong>Always on:</strong> supply stays on, ignition wire stays on (+), radio stays on. It uses about 45 W while listening.</li>
+      <li><strong>Keep the isolator:</strong> the radio supply and the PC are still two different ground paths through the mains.</li>
+      <li><strong>Trunked systems:</strong> if the radio is programmed for a trunked P25 system, it transmits short registration bursts on its own. That is normal for a radio authorized on that system — and the reason for the 20 A supply and the “antenna always connected” rule.</li>
+      <li><strong>Transcription and triggers</strong> happen entirely on the PC. Nothing in the hardware changes when you add or change keywords.</li>
+    </ul>
+  </div>
+
+  <h3>Troubleshooting</h3>
+  <table>
+    <tr><th style="width:230px">Problem</th><th>Check</th></tr>
+    <tr><td>Radio is on but never receives anything</td><td>Antenna plugged in and on its steel plate? Try another spot near a window. Right channel / talkgroup selected? Signal bars on the display?</td></tr>
+    <tr><td>Radio does nothing when I press power</td><td>Ignition wire from the HLN6863B must be on the supply (+). Supply switched on and reading 13–14 V? Fuse in the HKN4191C blown? Power plug latched?</td></tr>
+    <tr><td>Windows meter does not move during a transmission</td><td>Pins fully seated in holes 21 and 14? Capacitor joints solid (meter: pin 21 ↔ capacitor near lead = beep; capacitor far lead ↔ plug tip = beep)? Plug pushed all the way into the isolator and the isolator into the RED jack? Right input device selected?</td></tr>
+    <tr><td>Still silent, everything checks out</td><td>In CPS: Radio Configuration → Radio Wide → Advanced, check the rear accessory audio options. On most XTLs pin 21 is always live.</td></tr>
+    <tr><td>Loud hum or whine</td><td>Isolator in the chain? Try the PC on battery for a moment — if the hum disappears, it is a ground loop; keep the isolator and keep the supply and PC on the same outlet strip.</td></tr>
+    <tr><td>Too quiet</td><td>Raise Windows input volume. Still low → try the CPS Accessory → Rear RX audio gain.</td></tr>
+    <tr><td>Distorted / clipping</td><td>Lower Windows input volume; make sure mic boost is 0 dB.</td></tr>
+    <tr><td>Constant hiss between transmissions</td><td>Normal when the squelch opens. The software audio gate (next to‑do in the notes) handles this.</td></tr>
+  </table>
+
+  <h3>Before you buy — checklist</h3>
+  <ul class="chk">
+    <li>☐ A — 13.8 V supply, 20 A+</li>
+    <li>☐ B — HKN4191C power cable</li>
+    <li>☐ C — HLN6863B rear accessory connector</li>
+    <li>☐ D — 4 × crimp pins 3980034F01 / F04</li>
+    <li>☐ E — 2.2 µF bipolar capacitor, 50 V</li>
+    <li>☐ F — 3.5 mm TRS male‑to‑male shielded cable</li>
+    <li>☐ G — Cable Matters 3.5 mm ground‑loop isolator</li>
+    <li>☐ H — UGREEN 30724 USB audio adapter</li>
+    <li>☐ J — 800 MHz mag‑mount antenna with mini‑UHF plug + steel plate</li>
+    <li>☐ Tools: stripper, pliers/crimp tool, soldering iron or butt splices, heat‑shrink, multimeter</li>
+  </ul>
+</div>
+
+</body>
+</html>

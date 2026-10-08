@@ -90,3 +90,6 @@ Clips upload to Storage bucket `clips`; events appear on the Events page.
 ## Phase 2 (later)
 
 Wired radio adapters + mixer; set `audio_source` to `radio_line`. Same software.
+
+Hardware guide for the Motorola XTL 2500 station: [docs/xtl2500-build-guide.pdf](docs/xtl2500-build-guide.pdf)
+(notes: [docs/xtl2500-direct-audio.md](docs/xtl2500-direct-audio.md)).

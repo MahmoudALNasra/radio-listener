@@ -5,6 +5,13 @@ Agents on **any PC** read this after `AGENTS.md`.
 
 ---
 
+## 2026-10-08 — XTL 2500 illustrated build guide + station context (PC abrah)
+
+- Setup clarified: **fixed indoor station**, radio receives → PC transcribes → keyword triggers; no cabin mic, no speaker
+- Added `docs/xtl2500-build-guide.pdf` (+ `.html` source, `docs/xtl2500-parts/` images): overview diagram, user's rear-panel photo with socket callouts, parts A–J with pictures/search text/prices, connection map, cable-build drawing, 13 steps, troubleshooting
+- Power: 13.8 V / 20 A+ supply + HKN4191C; ignition lead on (+). Antenna: 800 MHz mag-mount, mini-UHF
+- Added `docs/xtl2500-chat-2026-10-08.md` (session Q&A + verified facts) and a station note at the top of `docs/xtl2500-direct-audio.md`
+
 ## 2026-10-08 — XTL 2500 direct-audio plan
 
 - Radio identified: Motorola XTL 2500 mobile `M21URM9PW1AN`
