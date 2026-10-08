@@ -55,27 +55,18 @@ def resolve_input_device(cfg: dict):
     return str(raw)
 
 
-def pick_capture_rate(device, preferred: int = 16000) -> int:
-    """Many USB mics only support 44.1/48 kHz — pick a rate PortAudio accepts."""
-    candidates: list[int] = []
+def _rate_candidates(device, preferred: int = 16000) -> list[int]:
+    rates: list[int] = []
     try:
         info = sd.query_devices(device, "input")
         default_rate = int(round(float(info.get("default_samplerate") or 48000)))
-        candidates.append(default_rate)
+        rates.append(default_rate)
     except Exception:
-        candidates.append(48000)
-    for rate in (preferred, 48000, 44100, 32000, 22050, 16000):
-        if rate not in candidates:
-            candidates.append(rate)
-    for rate in candidates:
-        try:
-            sd.check_input_settings(
-                device=device, channels=1, dtype="int16", samplerate=rate
-            )
-            return rate
-        except Exception:
-            continue
-    return candidates[0]
+        rates.append(48000)
+    for rate in (48000, 44100, 32000, 22050, preferred, 16000, 8000):
+        if rate not in rates:
+            rates.append(rate)
+    return rates
 
 
 def resample_int16_mono(pcm: bytes, src_rate: int, dst_rate: int) -> bytes:
@@ -92,6 +83,51 @@ def resample_int16_mono(pcm: bytes, src_rate: int, dst_rate: int) -> bytes:
     t_dst = np.linspace(0.0, 1.0, num=n_out, endpoint=False)
     y = np.interp(t_dst, t_src, x.astype(np.float32))
     return np.clip(y, -32768, 32767).astype(np.int16).tobytes()
+
+
+def stereo_to_mono_int16(pcm: bytes) -> bytes:
+    """Average L/R int16 interleaved frames into mono."""
+    import numpy as np
+
+    x = np.frombuffer(pcm, dtype=np.int16)
+    if x.size < 2:
+        return pcm
+    if x.size % 2:
+        x = x[:-1]
+    stereo = x.reshape(-1, 2).astype(np.int32)
+    mono = ((stereo[:, 0] + stereo[:, 1]) // 2).astype(np.int16)
+    return mono.tobytes()
+
+
+def open_input_stream(device, *, preferred_rate: int, callback):
+    """
+    Open the first working input stream.
+    Tries several sample rates and mono then stereo (USB mics vary a lot).
+    Returns (stream, capture_rate, channels).
+    """
+    last_err: Exception | None = None
+    for channels in (1, 2):
+        for rate in _rate_candidates(device, preferred_rate):
+            blocksize = max(512, int(round(2000 * rate / preferred_rate)))
+            kwargs = {
+                "samplerate": rate,
+                "blocksize": blocksize,
+                "dtype": "int16",
+                "channels": channels,
+                "callback": callback,
+            }
+            if device is not None:
+                kwargs["device"] = device
+            try:
+                stream = sd.RawInputStream(**kwargs)
+                stream.start()
+                return stream, rate, channels
+            except Exception as exc:
+                last_err = exc
+                continue
+    raise RuntimeError(
+        f"Could not open microphone (tried multiple rates/channels): {last_err}"
+    )
 
 
 def ensure_model() -> Model:
@@ -257,28 +293,26 @@ def main() -> None:
             daemon=True,
         ).start()
 
-    capture_rate = pick_capture_rate(input_device, preferred=sample_rate)
-    # Larger blocks at 48 kHz so after resample we still feed Vosk ~0.25s chunks
-    blocksize = max(1024, int(round(4000 * capture_rate / sample_rate)))
-    stream_kwargs = {
-        "samplerate": capture_rate,
-        "blocksize": blocksize,
-        "dtype": "int16",
-        "channels": 1,
-        "callback": audio_callback,
-    }
-    if input_device is not None:
-        stream_kwargs["device"] = input_device
-
-    if capture_rate != sample_rate:
-        print(
-            f"  mic rate: {capture_rate} Hz → resampling to {sample_rate} Hz for Vosk"
+    stream, capture_rate, capture_channels = open_input_stream(
+        input_device,
+        preferred_rate=sample_rate,
+        callback=audio_callback,
+    )
+    print(
+        f"  mic open: {capture_rate} Hz, {capture_channels} ch"
+        + (
+            f" → resample to {sample_rate} Hz mono for Vosk"
+            if capture_rate != sample_rate or capture_channels != 1
+            else ""
         )
+    )
 
-    with sd.RawInputStream(**stream_kwargs):
+    try:
         try:
             while True:
                 raw = audio_q.get()
+                if capture_channels == 2:
+                    raw = stereo_to_mono_int16(raw)
                 data = resample_int16_mono(raw, capture_rate, sample_rate)
                 if not data:
                     continue
@@ -329,6 +363,9 @@ def main() -> None:
                             start_hit(kw, partial)
         except KeyboardInterrupt:
             print("\nStopped.")
+    finally:
+        stream.stop()
+        stream.close()
 
 
 if __name__ == "__main__":
