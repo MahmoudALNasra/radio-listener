@@ -5,6 +5,12 @@ Agents on **any PC** read this after `AGENTS.md`.
 
 ---
 
+## 2026-10-08 — Pi listening works; fix events RLS for anon upload
+
+- Pi hit keyword `crash`, saved local WAV; upload failed with events RLS 42501
+- Added `supabase/fix_anon_events_rls.sql` to re-apply anon insert/read + ensure `pi-cabin-1` device exists
+- Note: config may point at project `rkjokoykyyejclyxszsk` (other-PC); MCP can manage `kvrzyjtcxmqxhinfxytq`
+
 ## 2026-10-08 — USB mic sample-rate resample for Pi
 
 - Error: `Invalid sample rate` opening mic at 16 kHz (USB lav often 44.1/48 kHz only)
