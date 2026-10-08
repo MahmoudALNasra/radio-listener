@@ -13,6 +13,9 @@ sudo apt-get install -y \
   python3-dev \
   portaudio19-dev \
   libportaudio2 \
+  libopenblas0 \
+  libatlas3-base \
+  gfortran \
   git \
   patchelf
 
