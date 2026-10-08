@@ -1,7 +1,7 @@
 [Unit]
 Description=Radio keyword listener
-After=network-online.target sound.target
-Wants=network-online.target
+After=network-online.target sound.target radio-listener-update.service
+Wants=network-online.target radio-listener-update.service
 
 [Service]
 Type=simple

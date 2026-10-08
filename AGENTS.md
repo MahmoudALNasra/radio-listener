@@ -40,8 +40,8 @@ Use examples: `device/config.example.json`, `device/config.pi.example.json`, `we
 ## Status (update when this changes)
 
 - **Supabase:** schema applied (profiles, devices, keywords, events, clips bucket + RLS)
-- **Pi software:** `setup_pi.sh`, systemd service, GPIO alert, USB mic `input_device` — ready to install once WiFi/SSH works
-- **Pi hardware:** user still setting up WiFi/SSH (may power from PC USB temporarily)
+- **Pi software:** `setup_pi.sh`, systemd services, GPIO alert, USB mic `input_device`, **git pull on every boot** (`radio-listener-update.service`)
+- **Pi hardware:** user flashing OS / first boot (WiFi+SSH via Imager); needs deploy key for private-repo auto-update
 - **ntfy:** wired in device sync + web phone uploads; topic lives only in local secret files
 - **LLM / addresses:** not built yet — plan free Gemini later for reason + address extraction
 - **SMS:** deferred; use ntfy for now

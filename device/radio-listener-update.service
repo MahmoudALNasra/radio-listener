@@ -1,0 +1,15 @@
+[Unit]
+Description=Pull radio-listener updates from GitHub
+After=network-online.target
+Wants=network-online.target
+Before=radio-listener.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/radio-listener
+ExecStart=/opt/radio-listener/device/update_from_git.sh
+TimeoutStartSec=120
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

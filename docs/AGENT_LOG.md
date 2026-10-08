@@ -5,6 +5,12 @@ Agents on **any PC** read this after `AGENTS.md`.
 
 ---
 
+## 2026-10-08 — git pull on Pi boot
+
+- Added `device/update_from_git.sh` + `radio-listener-update.service` so each power-on pulls latest `main` before the listener starts
+- `install_service.sh` now enables update + listener; pull failures do not block startup
+- Documented GitHub deploy-key steps for private repo in `docs/setup-raspberry-pi.md`
+
 ## 2026-10-07 — ntfy + Pi software + shared agent docs
 
 - Linked app to Supabase project `rkjokoykyyejclyxszsk` (schema applied remotely; local secrets only)

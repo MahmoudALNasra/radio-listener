@@ -78,7 +78,54 @@ Stop with `Ctrl+C`.
 
 ```bash
 sudo ./install_service.sh
-sudo journalctl -u radio-listener -f
+sudo journalctl -u radio-listener-update -u radio-listener -f
+```
+
+This installs two services:
+
+1. **`radio-listener-update`** — on every power-on / reboot, waits for network, then `git pull` from GitHub  
+2. **`radio-listener`** — starts the keyword listener (after the update attempt)
+
+If Wi‑Fi is down or pull fails, the Pi still starts with the last working code.
+
+### Auto-update from GitHub (private repo)
+
+The repo is private, so the Pi needs read access. Easiest: a **read-only deploy key**.
+
+On the Pi (once):
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/radio_listener_deploy -N ""
+cat ~/.ssh/radio_listener_deploy.pub
+```
+
+1. Copy that public key  
+2. GitHub → repo **Settings → Deploy keys → Add deploy key** (read-only)  
+3. On the Pi:
+
+```bash
+cd ~/radio-listener
+git remote set-url origin git@github.com:MahmoudALNasra/radio-listener.git
+
+cat >> ~/.ssh/config <<'EOF'
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/radio_listener_deploy
+  IdentitiesOnly yes
+EOF
+
+ssh -T git@github.com
+git pull
+```
+
+After that, every reboot runs `update_from_git.sh` automatically.
+
+Manual update anytime:
+
+```bash
+~/radio-listener/device/update_from_git.sh
+sudo systemctl restart radio-listener
 ```
 
 ## GPIO blue LED (optional)
