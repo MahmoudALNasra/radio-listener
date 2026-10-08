@@ -5,6 +5,11 @@ Agents on **any PC** read this after `AGENTS.md`.
 
 ---
 
+## 2026-10-08 — USB mic sample-rate resample for Pi
+
+- Error: `Invalid sample rate` opening mic at 16 kHz (USB lav often 44.1/48 kHz only)
+- `listener.py` now picks a supported capture rate and resamples to 16 kHz for Vosk/clips
+
 ## 2026-10-08 — fix Vosk libvosk.so execstack on Pi
 
 - Pi error: `cannot enable executable stack` loading `libvosk.so` (Python 3.13 venv)

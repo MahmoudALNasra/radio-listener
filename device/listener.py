@@ -55,6 +55,45 @@ def resolve_input_device(cfg: dict):
     return str(raw)
 
 
+def pick_capture_rate(device, preferred: int = 16000) -> int:
+    """Many USB mics only support 44.1/48 kHz — pick a rate PortAudio accepts."""
+    candidates: list[int] = []
+    try:
+        info = sd.query_devices(device, "input")
+        default_rate = int(round(float(info.get("default_samplerate") or 48000)))
+        candidates.append(default_rate)
+    except Exception:
+        candidates.append(48000)
+    for rate in (preferred, 48000, 44100, 32000, 22050, 16000):
+        if rate not in candidates:
+            candidates.append(rate)
+    for rate in candidates:
+        try:
+            sd.check_input_settings(
+                device=device, channels=1, dtype="int16", samplerate=rate
+            )
+            return rate
+        except Exception:
+            continue
+    return candidates[0]
+
+
+def resample_int16_mono(pcm: bytes, src_rate: int, dst_rate: int) -> bytes:
+    """Lightweight linear resample for mono int16 PCM."""
+    if not pcm or src_rate == dst_rate:
+        return pcm
+    import numpy as np
+
+    x = np.frombuffer(pcm, dtype=np.int16)
+    if x.size == 0:
+        return b""
+    n_out = max(1, int(round(x.size * dst_rate / src_rate)))
+    t_src = np.linspace(0.0, 1.0, num=x.size, endpoint=False)
+    t_dst = np.linspace(0.0, 1.0, num=n_out, endpoint=False)
+    y = np.interp(t_dst, t_src, x.astype(np.float32))
+    return np.clip(y, -32768, 32767).astype(np.int16).tobytes()
+
+
 def ensure_model() -> Model:
     if not MODEL_DIR.exists():
         print(
@@ -218,9 +257,12 @@ def main() -> None:
             daemon=True,
         ).start()
 
+    capture_rate = pick_capture_rate(input_device, preferred=sample_rate)
+    # Larger blocks at 48 kHz so after resample we still feed Vosk ~0.25s chunks
+    blocksize = max(1024, int(round(4000 * capture_rate / sample_rate)))
     stream_kwargs = {
-        "samplerate": sample_rate,
-        "blocksize": 4000,
+        "samplerate": capture_rate,
+        "blocksize": blocksize,
         "dtype": "int16",
         "channels": 1,
         "callback": audio_callback,
@@ -228,10 +270,18 @@ def main() -> None:
     if input_device is not None:
         stream_kwargs["device"] = input_device
 
+    if capture_rate != sample_rate:
+        print(
+            f"  mic rate: {capture_rate} Hz → resampling to {sample_rate} Hz for Vosk"
+        )
+
     with sd.RawInputStream(**stream_kwargs):
         try:
             while True:
-                data = audio_q.get()
+                raw = audio_q.get()
+                data = resample_int16_mono(raw, capture_rate, sample_rate)
+                if not data:
+                    continue
                 ring.write(data)
 
                 if pending_hit is not None:
