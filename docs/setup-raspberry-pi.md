@@ -143,7 +143,7 @@ Until the LED is wired, keep `"alert_backend": "simulate"`.
 | Symptom | Check |
 |---------|--------|
 | No mic / PortAudio error | `python list_audio_devices.py`, try another `input_device` |
-| `cannot enable executable stack` / `libvosk.so` | `sudo apt install -y execstack` then `execstack -c .venv/lib/python*/site-packages/vosk/libvosk.so` (also done by `setup_pi.sh`) |
+| `cannot enable executable stack` / `libvosk.so` | `sudo apt install -y patchelf` then `patchelf --clear-execstack .venv/lib/python*/site-packages/vosk/libvosk.so` (also done by `setup_pi.sh`) |
 | Undervoltage / reboots | Use a proper 5V 2.5A+ supply (not weak PC USB power) |
 | Sync fails | Confirm `supabase_anon_key`, WiFi, and that schema was applied |
 | Service won’t start | `sudo journalctl -u radio-listener -xe` |

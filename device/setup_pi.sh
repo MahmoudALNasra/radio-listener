@@ -14,7 +14,7 @@ sudo apt-get install -y \
   portaudio19-dev \
   libportaudio2 \
   git \
-  execstack
+  patchelf
 
 echo "==> Creating Python venv"
 python3 -m venv .venv
@@ -26,9 +26,22 @@ python -m pip install -r requirements.txt
 # Newer Pi OS / kernels reject libs that request an executable stack.
 # Clear that flag on Vosk's native library (fixes: cannot enable executable stack).
 echo "==> Patching libvosk.so (clear execstack bit)"
+fixchelf_vosk() {
+  local so="$1"
+  if command -v patchelf >/dev/null 2>&1; then
+    patchelf --clear-execstack "$so" 2>/dev/null \
+      || sudo patchelf --clear-execstack "$so" 2>/dev/null \
+      || true
+  elif command -v execstack >/dev/null 2>&1; then
+    execstack -c "$so" 2>/dev/null || sudo execstack -c "$so" 2>/dev/null || true
+  else
+    echo "    WARN: install patchelf: sudo apt install -y patchelf"
+    return 1
+  fi
+  echo "    patched $so"
+}
 while IFS= read -r so; do
-  echo "    execstack -c $so"
-  execstack -c "$so" || sudo execstack -c "$so" || true
+  patch_vosk "$so"
 done < <(find "$ROOT/.venv" -name 'libvosk.so' 2>/dev/null)
 
 if [[ ! -f config.json ]]; then
