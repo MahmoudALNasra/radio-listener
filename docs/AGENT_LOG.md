@@ -12,6 +12,12 @@ Agents on **any PC** read this after `AGENTS.md`.
 - Power: 13.8 V / 20 A+ supply + HKN4191C; ignition lead on (+). Antenna: 800 MHz mag-mount, mini-UHF
 - Added `docs/xtl2500-chat-2026-10-08.md` (session Q&A + verified facts) and a station note at the top of `docs/xtl2500-direct-audio.md`
 
+## 2026-10-09 — Amazon / Walmart shopping links for XTL parts
+
+- Pulled latest (build guide PDF + parts photos already on main)
+- Added `docs/xtl2500-shopping-links.md`: which A–J parts are on Amazon vs Walmart vs radio shops, with direct product URLs
+- Walmart: isolator, USB sound card, aux cable, maybe cheap PSU. Motorola HLN6863B / crimp pins / HKN4191: Amazon specialty or radio shops only
+
 ## 2026-10-08 — XTL 2500 direct-audio plan
 
 - Radio identified: Motorola XTL 2500 mobile `M21URM9PW1AN`

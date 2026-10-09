@@ -61,5 +61,7 @@ Use examples: `device/config.example.json`, `device/config.pi.example.json`, `we
 - [docs/AGENT_LOG.md](docs/AGENT_LOG.md)
 - [docs/test-on-lenovo.md](docs/test-on-lenovo.md)
 - [docs/xtl2500-direct-audio.md](docs/xtl2500-direct-audio.md)
+- [docs/xtl2500-build-guide.pdf](docs/xtl2500-build-guide.pdf) — illustrated station build
+- [docs/xtl2500-shopping-links.md](docs/xtl2500-shopping-links.md) — Amazon / Walmart buy links
 - [docs/xtl2500-build-guide.pdf](docs/xtl2500-build-guide.pdf) — illustrated station build guide (source: `docs/xtl2500-build-guide.html`)
 - [docs/xtl2500-chat-2026-10-08.md](docs/xtl2500-chat-2026-10-08.md) — decisions / Q&A from the guide session
