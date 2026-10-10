@@ -5,6 +5,12 @@ Agents on **any PC** read this after `AGENTS.md`.
 
 ---
 
+## 2026-10-10 — picture for every build step in the XTL 2500 guide (PC abrah)
+
+- `docs/xtl2500-build-guide.pdf` / `.html`: each of the 13 steps now has a figure beside it — exact drawings (cut point, plug tip/ring/sleeve + beep table, 4-panel capacitor splice, crimp-pin anatomy, pin-into-housing cut-away, supply posts, Windows Sound page), crops of the user's own radio photos with arrows on J2 / POWER / antenna / power button, a photo chain plug→isolator→UGREEN→PC, and a real `config.json` / `list_audio_devices.py` snippet
+- 4 new hands-on photos in `docs/xtl2500-parts/step-*.jpg` (AI look-alikes, generic parts)
+- Step 13 now uses the real helper `device/list_audio_devices.py` and `audio_source: radio_line`
+
 ## 2026-10-08 — XTL 2500 illustrated build guide + station context (PC abrah)
 
 - Setup clarified: **fixed indoor station**, radio receives → PC transcribes → keyword triggers; no cabin mic, no speaker

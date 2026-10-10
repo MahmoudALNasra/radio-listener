@@ -36,7 +36,22 @@
   .photo img { width: 100%; display: block; border: 1px solid #999; }
   .mark { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; background: #ffd400; color: #000; border: 2px solid #000; font-weight: 700; text-align: center; line-height: 20px; font-size: 11pt; }
   .steps { counter-reset: step; }
-  .step { break-inside: avoid; border-left: 4px solid #222; padding: 4px 10px 6px; margin: 0 0 10px; }
+  .step { break-inside: avoid; border-left: 4px solid #222; padding: 4px 10px 8px; margin: 0 0 12px; }
+  .step .row { display: flex; gap: 12px; align-items: flex-start; }
+  .step .body { flex: 1 1 0; min-width: 0; }
+  .step .fig { flex: 0 0 265px; max-width: 265px; }
+  .step .fig > img, .step .fig > svg, .step .stack > svg { width: 100%; display: block; border: 1px solid #ccc; background: #fff; }
+  .step .fig > img + img, .step .fig > svg + img { margin-top: 6px; }
+  .step .fig .cap { font-size: 8.8pt; color: #444; margin-top: 3px; line-height: 1.3; }
+  .step .stack img.thumb { display: block; height: 62px; width: auto; max-width: 100%; margin: 0 auto 2px; border: none; }
+  .step .stack .arrow { text-align: center; font-size: 9pt; color: #0b4fa8; margin: 0 0 3px; }
+  .step .wide { margin-top: 8px; }
+  .step .wide svg { width: 100%; display: block; border: 1px solid #ccc; }
+  .step pre { background: #f5f5f5; border: 1px solid #ccc; padding: 6px 8px; font-size: 8.4pt; line-height: 1.3; margin: 0; white-space: pre-wrap; font-family: Consolas, "Courier New", monospace; }
+  .chain { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+  .chain .cell { flex: 1 1 0; min-width: 0; text-align: center; font-size: 8.8pt; color: #333; line-height: 1.3; }
+  .chain .cell img { height: 72px; width: auto; max-width: 100%; object-fit: contain; display: block; margin: 0 auto 3px; }
+  .chain .arr { font-size: 18pt; color: #0b4fa8; flex: 0 0 auto; line-height: 1; }
   .step h4 { margin: 0 0 4px; font-size: 10.5pt; }
   .step h4::before { counter-increment: step; content: "Step " counter(step) " — "; }
   .step ul { margin: 2px 0 2px 18px; padding: 0; }
@@ -387,83 +402,303 @@
 <!-- ============================ PAGE 5+: STEPS ============================ -->
 <div class="section steps">
   <h2>4. Step‑by‑step build</h2>
+  <p class="small">Every step has a picture. Drawings are exact for this build; photos show what the job looks like in your hands (generic parts in some photos).</p>
 
   <h3>Part A — Build the audio cable (nothing plugged in yet)</h3>
 
   <div class="step">
     <h4>Cut the 3.5 mm cable</h4>
-    <ul>
-      <li>Measure about <strong>18 inches</strong> from one plug and cut the cable there. You will use that 18‑inch piece (one plug + wire). The rest is spare.</li>
-      <li>Strip <strong>1 inch</strong> of the outer black jacket from the cut end. Be gentle — the wires inside are thin.</li>
-      <li>Inside you will find a <strong>bare braided or foil shield</strong> wrapped around <strong>one or two insulated wires</strong> (often red and white).</li>
-      <li>Twist the shield strands together into one wire. If there are two insulated wires, strip ¼ in from each and twist them together — they become one <strong>signal</strong> wire.</li>
-    </ul>
+    <div class="row">
+      <div class="body">
+        <ul>
+          <li>Measure about <strong>18 inches</strong> from one plug and cut the cable there. You will use that 18‑inch piece (one plug + wire). The rest is spare.</li>
+          <li>Strip <strong>1 inch</strong> of the outer black jacket from the cut end. Be gentle — the wires inside are thin.</li>
+          <li>Inside you will find a <strong>bare braided or foil shield</strong> wrapped around <strong>one or two insulated wires</strong> (often red and white).</li>
+          <li>Twist the shield strands together into one wire. If there are two insulated wires, strip ¼ in from each and twist them together — they become one <strong>signal</strong> wire.</li>
+        </ul>
+      </div>
+      <div class="fig">
+        <svg viewBox="0 0 280 80" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif" font-size="10">
+          <rect x="6" y="28" width="26" height="16" rx="3" fill="#222"/>
+          <rect x="32" y="31" width="14" height="10" fill="#999"/>
+          <line x1="46" y1="36" x2="234" y2="36" stroke="#222" stroke-width="4"/>
+          <rect x="234" y="31" width="14" height="10" fill="#999"/>
+          <rect x="248" y="28" width="26" height="16" rx="3" fill="#222"/>
+          <line x1="124" y1="20" x2="136" y2="52" stroke="#b00000" stroke-width="2"/>
+          <line x1="136" y1="20" x2="124" y2="52" stroke="#b00000" stroke-width="2"/>
+          <text x="130" y="13" text-anchor="middle" fill="#b00000" font-weight="700">cut here</text>
+          <line x1="46" y1="62" x2="124" y2="62" stroke="#444"/>
+          <line x1="46" y1="57" x2="46" y2="67" stroke="#444"/>
+          <line x1="124" y1="57" x2="124" y2="67" stroke="#444"/>
+          <text x="85" y="76" text-anchor="middle" fill="#444">18 in — keep this piece</text>
+          <text x="200" y="76" text-anchor="middle" fill="#888">spare</text>
+        </svg>
+        <img src="xtl2500-parts/step-01-cable-stripped.jpg" alt="Stripped cable end">
+        <div class="cap">After stripping: bare braid = <strong>shield</strong> (ground); red + white = <strong>signal</strong> (twist them together).</div>
+      </div>
+    </div>
   </div>
 
   <div class="step">
     <h4>Confirm which wire is which (multimeter, continuity / beep mode)</h4>
-    <ul>
-      <li>One probe on the plug’s <strong>tip</strong> (the very end), other probe on the <strong>signal</strong> wire → it should beep.</li>
-      <li>One probe on the plug’s <strong>sleeve</strong> (the long metal part next to the cable), other probe on the <strong>shield</strong> wire → beep.</li>
-      <li>Signal to shield → <strong>no</strong> beep. If it beeps, strands are touching; separate them.</li>
-      <li>No multimeter? The shield is always the bare braid; the insulated wires are always signal.</li>
-    </ul>
+    <div class="row">
+      <div class="body">
+        <ul>
+          <li>One probe on the plug’s <strong>tip</strong> (the very end), other probe on the <strong>signal</strong> wire → it should beep.</li>
+          <li>One probe on the plug’s <strong>sleeve</strong> (the long metal part next to the cable), other probe on the <strong>shield</strong> wire → beep.</li>
+          <li>Signal to shield → <strong>no</strong> beep. If it beeps, strands are touching; separate them.</li>
+          <li>No multimeter? The shield is always the bare braid; the insulated wires are always signal.</li>
+        </ul>
+      </div>
+      <div class="fig">
+        <svg viewBox="0 0 280 150" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif" font-size="10">
+          <line x1="0" y1="38" x2="12" y2="38" stroke="#222" stroke-width="4"/>
+          <rect x="12" y="18" width="70" height="40" rx="5" fill="#222"/>
+          <text x="47" y="42" text-anchor="middle" fill="#fff" font-size="9">plug body</text>
+          <rect x="82" y="28" width="58" height="20" fill="#999" stroke="#222"/>
+          <rect x="140" y="28" width="7" height="20" fill="#222"/>
+          <rect x="147" y="28" width="30" height="20" fill="#999" stroke="#222"/>
+          <rect x="177" y="28" width="7" height="20" fill="#222"/>
+          <path d="M184 28 h18 a10 10 0 0 1 0 20 h-18 z" fill="#999" stroke="#222"/>
+          <text x="111" y="70" text-anchor="middle">sleeve</text>
+          <text x="162" y="70" text-anchor="middle">ring</text>
+          <text x="196" y="70" text-anchor="middle">tip</text>
+          <line x1="12" y1="84" x2="268" y2="84" stroke="#ccc"/>
+          <g font-size="11">
+            <text x="12" y="100">tip ↔ signal wire</text>
+            <text x="268" y="100" text-anchor="end" fill="#0a7a2a" font-weight="700">BEEP ✓</text>
+            <text x="12" y="120">sleeve ↔ shield (braid)</text>
+            <text x="268" y="120" text-anchor="end" fill="#0a7a2a" font-weight="700">BEEP ✓</text>
+            <text x="12" y="140">signal ↔ shield</text>
+            <text x="268" y="140" text-anchor="end" fill="#b00000" font-weight="700">silent ✗</text>
+          </g>
+        </svg>
+        <div class="cap">Continuity (beep) mode. The ring does not matter for this build.</div>
+      </div>
+    </div>
   </div>
 
   <div class="step">
     <h4>Splice the 2.2 µF capacitor into the signal wire</h4>
-    <ul>
-      <li>About <strong>3 inches</strong> from the cut end, cut the <strong>signal wire only</strong>. Strip ¼ in from both new ends. Leave the shield wire whole.</li>
-      <li>Slide a piece of heat‑shrink onto each end before joining (easy to forget).</li>
-      <li>Twist one capacitor lead onto one cut end, the other lead onto the other cut end. Solder both joints (or use two small butt‑splice crimps). Trim the leads short.</li>
-      <li>Direction does <strong>not</strong> matter — a bipolar capacitor has no + or −.</li>
-      <li>Shrink or tape each joint so no bare metal is exposed. The capacitor is now “in series on pin 21”, exactly as the notes say.</li>
-    </ul>
+    <div class="row">
+      <div class="body">
+        <ul>
+          <li>About <strong>3 inches</strong> from the cut end, cut the <strong>signal wire only</strong>. Strip ¼ in from both new ends. Leave the shield wire whole.</li>
+          <li>Slide a piece of heat‑shrink onto each end before joining (easy to forget).</li>
+          <li>Twist one capacitor lead onto one cut end, the other lead onto the other cut end. Solder both joints (or use two small butt‑splice crimps). Trim the leads short.</li>
+          <li>Direction does <strong>not</strong> matter — a bipolar capacitor has no + or −.</li>
+          <li>Shrink or tape each joint so no bare metal is exposed. The capacitor is now “in series on pin 21”, exactly as the notes say.</li>
+        </ul>
+      </div>
+      <div class="fig">
+        <img src="xtl2500-parts/step-03-capacitor-splice.jpg" alt="Finished capacitor splice">
+        <div class="cap">Finished splice: capacitor in the signal wire, both joints under heat‑shrink; shield wire runs past untouched.</div>
+      </div>
+    </div>
+    <div class="wide">
+      <svg viewBox="0 0 700 150" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif" font-size="10.5">
+        <g>
+          <rect x="5" y="4" width="165" height="118" fill="#fafafa" stroke="#ddd"/>
+          <line x1="15" y1="45" x2="85" y2="45" stroke="#c0392b" stroke-width="5"/>
+          <line x1="95" y1="45" x2="160" y2="45" stroke="#c0392b" stroke-width="5"/>
+          <line x1="84" y1="30" x2="96" y2="60" stroke="#b00000" stroke-width="2"/>
+          <line x1="96" y1="30" x2="84" y2="60" stroke="#b00000" stroke-width="2"/>
+          <text x="90" y="24" text-anchor="middle" fill="#b00000" font-weight="700">cut</text>
+          <line x1="95" y1="66" x2="160" y2="66" stroke="#444"/>
+          <text x="128" y="78" text-anchor="middle" fill="#444">3 in to the end</text>
+          <line x1="15" y1="95" x2="160" y2="95" stroke="#777" stroke-width="4"/>
+          <text x="88" y="112" text-anchor="middle" fill="#444">shield wire: do not cut</text>
+          <text x="88" y="140" text-anchor="middle" font-weight="700">① Cut the signal wire only</text>
+        </g>
+        <g>
+          <rect x="180" y="4" width="165" height="118" fill="#fafafa" stroke="#ddd"/>
+          <line x1="190" y1="45" x2="242" y2="45" stroke="#c0392b" stroke-width="5"/>
+          <line x1="242" y1="45" x2="256" y2="45" stroke="#c87533" stroke-width="2.5"/>
+          <line x1="276" y1="45" x2="290" y2="45" stroke="#c87533" stroke-width="2.5"/>
+          <line x1="290" y1="45" x2="335" y2="45" stroke="#c0392b" stroke-width="5"/>
+          <rect x="206" y="39" width="22" height="12" rx="2" fill="#222"/>
+          <rect x="300" y="39" width="22" height="12" rx="2" fill="#222"/>
+          <text x="217" y="32" text-anchor="middle" fill="#444" font-size="9">heat‑shrink</text>
+          <text x="311" y="32" text-anchor="middle" fill="#444" font-size="9">heat‑shrink</text>
+          <text x="266" y="68" text-anchor="middle" fill="#444">¼ in bare each side</text>
+          <line x1="190" y1="95" x2="335" y2="95" stroke="#777" stroke-width="4"/>
+          <text x="263" y="140" text-anchor="middle" font-weight="700">② Strip ¼ in · slide tubes on</text>
+        </g>
+        <g>
+          <rect x="355" y="4" width="165" height="118" fill="#fafafa" stroke="#ddd"/>
+          <line x1="365" y1="45" x2="417" y2="45" stroke="#c0392b" stroke-width="5"/>
+          <line x1="417" y1="45" x2="434" y2="45" stroke="#c87533" stroke-width="2.5"/>
+          <line x1="486" y1="45" x2="503" y2="45" stroke="#c87533" stroke-width="2.5"/>
+          <line x1="503" y1="45" x2="510" y2="45" stroke="#c0392b" stroke-width="5"/>
+          <rect x="441" y="33" width="38" height="24" rx="4" fill="#222"/>
+          <line x1="434" y1="45" x2="441" y2="45" stroke="#999" stroke-width="2"/>
+          <line x1="479" y1="45" x2="486" y2="45" stroke="#999" stroke-width="2"/>
+          <circle cx="433" cy="45" r="4" fill="#999"/>
+          <circle cx="487" cy="45" r="4" fill="#999"/>
+          <rect x="381" y="39" width="22" height="12" rx="2" fill="#222"/>
+          <text x="460" y="24" text-anchor="middle" fill="#444">2.2 µF — any direction</text>
+          <text x="433" y="68" text-anchor="middle" fill="#444" font-size="9">solder</text>
+          <text x="487" y="68" text-anchor="middle" fill="#444" font-size="9">solder</text>
+          <line x1="365" y1="95" x2="510" y2="95" stroke="#777" stroke-width="4"/>
+          <text x="438" y="140" text-anchor="middle" font-weight="700">③ Twist + solder a lead to each end</text>
+        </g>
+        <g>
+          <rect x="530" y="4" width="165" height="118" fill="#fafafa" stroke="#ddd"/>
+          <line x1="540" y1="45" x2="600" y2="45" stroke="#c0392b" stroke-width="5"/>
+          <line x1="660" y1="45" x2="685" y2="45" stroke="#c0392b" stroke-width="5"/>
+          <rect x="596" y="38" width="20" height="14" rx="2" fill="#222"/>
+          <rect x="646" y="38" width="20" height="14" rx="2" fill="#222"/>
+          <rect x="616" y="33" width="30" height="24" rx="4" fill="#222"/>
+          <text x="631" y="24" text-anchor="middle" fill="#444">no bare metal showing</text>
+          <line x1="540" y1="95" x2="685" y2="95" stroke="#777" stroke-width="4"/>
+          <text x="612" y="112" text-anchor="middle" fill="#444">shield wire still whole</text>
+          <text x="613" y="140" text-anchor="middle" font-weight="700">④ Slide tubes over joints · shrink</text>
+        </g>
+      </svg>
+    </div>
   </div>
 
   <div class="step">
     <h4>Crimp the two Motorola pins</h4>
-    <ul>
-      <li>Strip ⅛–3/16 in of insulation from the end of the signal wire (the end past the capacitor) and from the shield wire.</li>
-      <li>Lay the bare copper in the small barrel of a pin; fold the small tabs over the copper, then the larger tabs over the insulation. Squeeze firmly with the crimp tool or pliers.</li>
-      <li>Pull gently on each wire. If a pin slides off, re‑crimp. A dab of solder on the copper crimp adds strength.</li>
-    </ul>
+    <div class="row">
+      <div class="body">
+        <ul>
+          <li>Strip ⅛–3/16 in of insulation from the end of the signal wire (the end past the capacitor) and from the shield wire.</li>
+          <li>Lay the bare copper in the small barrel of a pin; fold the small tabs over the copper, then the larger tabs over the insulation. Squeeze firmly with the crimp tool or pliers.</li>
+          <li>Pull gently on each wire. If a pin slides off, re‑crimp. A dab of solder on the copper crimp adds strength.</li>
+        </ul>
+        <svg viewBox="0 0 280 118" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif" font-size="9.5" style="width:100%; max-width:330px; display:block; margin-top:6px; border:1px solid #ccc;">
+          <rect x="88" y="62" width="40" height="8" fill="#aaa" stroke="#444"/>
+          <rect x="134" y="63" width="44" height="10" fill="#aaa" stroke="#444"/>
+          <line x1="150" y1="60" x2="280" y2="60" stroke="#c0392b" stroke-width="7"/>
+          <line x1="95" y1="60" x2="150" y2="60" stroke="#c87533" stroke-width="3"/>
+          <rect x="14" y="54" width="70" height="12" rx="6" fill="#aaa" stroke="#444"/>
+          <path d="M90 62 v-14 h6 v14 M120 62 v-14 h6 v14" fill="#aaa" stroke="#444"/>
+          <path d="M136 63 v-20 h7 v20 M169 63 v-20 h7 v20" fill="#aaa" stroke="#444"/>
+          <line x1="108" y1="34" x2="108" y2="46" stroke="#444"/>
+          <text x="108" y="30" text-anchor="middle">small tabs → fold over bare copper</text>
+          <line x1="156" y1="76" x2="156" y2="90" stroke="#444"/>
+          <text x="196" y="100" text-anchor="middle">big tabs → fold over insulation</text>
+          <text x="6" y="86">contact — goes into the housing</text>
+          <text x="140" y="114" text-anchor="middle" fill="#444">squeeze with pliers, then pull‑test</text>
+        </svg>
+      </div>
+      <div class="fig">
+        <img src="xtl2500-parts/step-04-crimp-pin.jpg" alt="Crimping a pin">
+        <div class="cap">Crimping with needle‑nose pliers; a finished pin below. Generic pin shown — yours is part D.</div>
+      </div>
+    </div>
   </div>
 
   <div class="step">
     <h4>Push the pins into the HLN6863B housing</h4>
-    <ul>
-      <li>Look at the <strong>wire side</strong> (back) of the black HLN6863B block. Tiny numbers are molded next to the holes. Find <strong>21</strong> and <strong>14</strong>. Some positions already have wires (ignition, speaker) — leave them alone.</li>
-      <li>Push the <strong>signal</strong> pin into hole <strong>21</strong> until it clicks. Push the <strong>shield</strong> pin into hole <strong>14</strong> until it clicks.</li>
-      <li>Tug each wire lightly — it must not come back out.</li>
-      <li>Check with the meter: signal pin ↔ plug tip = <strong>no beep</strong> (the capacitor blocks DC — that is correct); shield pin ↔ plug sleeve = beep.</li>
-    </ul>
+    <div class="row">
+      <div class="body">
+        <ul>
+          <li>Look at the <strong>wire side</strong> (back) of the black HLN6863B block. Tiny numbers are molded next to the holes. Find <strong>21</strong> and <strong>14</strong>. Some positions already have wires (ignition, speaker) — leave them alone.</li>
+          <li>Push the <strong>signal</strong> pin into hole <strong>21</strong> until it clicks. Push the <strong>shield</strong> pin into hole <strong>14</strong> until it clicks.</li>
+          <li>Tug each wire lightly — it must not come back out.</li>
+          <li>Check with the meter: signal pin ↔ plug tip = <strong>no beep</strong> (the capacitor blocks DC — that is correct); shield pin ↔ plug sleeve = beep.</li>
+        </ul>
+        <svg viewBox="0 0 280 130" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif" font-size="9.5" style="width:100%; max-width:330px; display:block; margin-top:6px; border:1px solid #ccc;">
+          <rect x="130" y="14" width="120" height="100" fill="#ddd" stroke="#222" stroke-width="1.5"/>
+          <rect x="130" y="56" width="120" height="18" fill="#fff" stroke="#222"/>
+          <path d="M214 56 l12 7 l-12 7 z" fill="#222"/>
+          <line x1="0" y1="65" x2="70" y2="65" stroke="#c0392b" stroke-width="6"/>
+          <rect x="70" y="59" width="56" height="12" rx="4" fill="#aaa" stroke="#444"/>
+          <path d="M96 42 h30 m0 0 l-6 -5 m6 5 l-6 5" fill="none" stroke="#0b4fa8" stroke-width="2"/>
+          <text x="4" y="30" fill="#0b4fa8" font-weight="700">push from WIRE side (back)</text>
+          <text x="190" y="30" text-anchor="middle" fill="#444">housing, cut‑away view</text>
+          <text x="190" y="94" text-anchor="middle" fill="#444" font-size="9">“click” — tab locks the pin</text>
+          <text x="275" y="92" fill="#444" font-size="9" transform="rotate(-90 275 92)">radio side</text>
+          <text x="140" y="126" text-anchor="middle" fill="#444">21 and 14 are molded next to the holes on the wire side</text>
+        </svg>
+      </div>
+      <div class="fig">
+        <img src="xtl2500-parts/step-05-insert-pin.jpg" alt="Pushing a pin into a connector housing">
+        <div class="cap">Pin goes in from the wire side until it clicks. Generic housing shown — the HLN6863B block looks different but works the same way.</div>
+      </div>
+    </div>
   </div>
 
   <h3>Part B — Plug everything into the radio (power still OFF)</h3>
 
   <div class="step">
     <h4>Connect the HLN6863B to the radio</h4>
-    <ul>
-      <li>Push the HLN6863B block onto the <strong>J2 socket</strong> (marker 3, far right on the back of the radio). It only goes on one way. Tighten its screw finger‑tight.</li>
-      <li>Keep the 3.5 mm plug end free for now. Do not plug it into anything that is powered.</li>
-    </ul>
+    <div class="row">
+      <div class="body">
+        <ul>
+          <li>Push the HLN6863B block onto the <strong>J2 socket</strong> (marker 3, far right on the back of the radio). It only goes on one way. Tighten its screw finger‑tight.</li>
+          <li>Keep the 3.5 mm plug end free for now. Do not plug it into anything that is powered.</li>
+        </ul>
+      </div>
+      <div class="fig">
+        <div class="stack">
+          <img class="thumb" src="xtl2500-parts/02-hln6863b-real-product.jpg" alt="HLN6863B">
+          <div class="arrow">▼ plugs onto J2</div>
+          <svg viewBox="610 170 250 210" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+            <image href="xtl2500-parts/00-your-xtl2500-rear.png" x="0" y="0" width="960" height="538"/>
+            <circle cx="735" cy="282" r="50" fill="none" stroke="#ffd400" stroke-width="5"/>
+            <path d="M735 178 v44" stroke="#ffd400" stroke-width="5"/>
+            <path d="M722 213 l13 15 l13 -15" fill="none" stroke="#ffd400" stroke-width="5"/>
+            <text x="735" y="366" text-anchor="middle" font-size="18" font-weight="700" fill="#fff" stroke="#000" stroke-width="3" paint-order="stroke">J2 — marker 3</text>
+          </svg>
+        </div>
+        <div class="cap">Your radio, rear right. The HLN6863B block goes on this 26‑hole socket.</div>
+      </div>
+    </div>
   </div>
 
   <div class="step">
     <h4>Connect the power cable to the radio</h4>
-    <ul>
-      <li>Push the 2‑pin plug of the HKN4191C into the <strong>POWER socket</strong> (marker 2) until it latches.</li>
-      <li>Check the fuse holder on the red wire has its 20 A fuse in it.</li>
-    </ul>
+    <div class="row">
+      <div class="body">
+        <ul>
+          <li>Push the 2‑pin plug of the HKN4191C into the <strong>POWER socket</strong> (marker 2) until it latches.</li>
+          <li>Check the fuse holder on the red wire has its 20 A fuse in it.</li>
+        </ul>
+      </div>
+      <div class="fig">
+        <div class="stack">
+          <img class="thumb" src="xtl2500-parts/09-motorola-power-cable-hkn4191.jpg" alt="HKN4191C power cable">
+          <div class="arrow">▼ 2‑pin plug into POWER</div>
+          <svg viewBox="545 185 240 195" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+            <image href="xtl2500-parts/00-your-xtl2500-rear.png" x="0" y="0" width="960" height="538"/>
+            <circle cx="650" cy="295" r="40" fill="none" stroke="#ffd400" stroke-width="5"/>
+            <path d="M650 193 v46" stroke="#ffd400" stroke-width="5"/>
+            <path d="M637 230 l13 15 l13 -15" fill="none" stroke="#ffd400" stroke-width="5"/>
+            <text x="650" y="368" text-anchor="middle" font-size="18" font-weight="700" fill="#fff" stroke="#000" stroke-width="3" paint-order="stroke">POWER — marker 2</text>
+          </svg>
+        </div>
+        <div class="cap">The 2‑pin socket just right of the heat‑sink fins.</div>
+      </div>
+    </div>
   </div>
 
   <div class="step">
     <h4>Connect the antenna</h4>
-    <ul>
-      <li>Put the mag‑mount on the steel plate, as high and as close to a window as the cable allows (away from the PC and the power supply).</li>
-      <li>Screw its mini‑UHF plug onto the antenna socket (marker 1). Finger‑tight is enough. Without an antenna you will hear almost nothing.</li>
-    </ul>
+    <div class="row">
+      <div class="body">
+        <ul>
+          <li>Put the mag‑mount on the steel plate, as high and as close to a window as the cable allows (away from the PC and the power supply).</li>
+          <li>Screw its mini‑UHF plug onto the antenna socket (marker 1). Finger‑tight is enough. Without an antenna you will hear almost nothing.</li>
+        </ul>
+      </div>
+      <div class="fig">
+        <div class="stack">
+          <img class="thumb" src="xtl2500-parts/10-800mhz-mag-mount-antenna.jpg" alt="Mag-mount antenna">
+          <div class="arrow">▼ mini‑UHF onto the antenna socket</div>
+          <svg viewBox="130 205 230 185" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+            <image href="xtl2500-parts/00-your-xtl2500-rear.png" x="0" y="0" width="960" height="538"/>
+            <circle cx="236" cy="300" r="42" fill="none" stroke="#ffd400" stroke-width="5"/>
+            <path d="M236 212 v34" stroke="#ffd400" stroke-width="5"/>
+            <path d="M223 237 l13 15 l13 -15" fill="none" stroke="#ffd400" stroke-width="5"/>
+            <text x="245" y="380" text-anchor="middle" font-size="18" font-weight="700" fill="#fff" stroke="#000" stroke-width="3" paint-order="stroke">ANTENNA — marker 1</text>
+          </svg>
+        </div>
+        <div class="cap">Rear left. Antenna on its steel plate by a window.</div>
+      </div>
+    </div>
   </div>
 
   <div class="step">
@@ -473,6 +708,18 @@
       <li>Isolator <strong>male</strong> plug → <strong>RED</strong> jack of the UGREEN adapter. (Green is for headphones — ignore it.)</li>
       <li>UGREEN USB end → any USB port on the PC / Pi.</li>
     </ul>
+    <div class="chain">
+      <div class="cell"><img src="xtl2500-parts/06-35mm-trs-cable.jpg" alt="3.5 mm plug"><strong>3.5 mm plug</strong><br>from Part A</div>
+      <div class="arr">→</div>
+      <div class="cell"><img src="xtl2500-parts/05-ground-loop-isolator.jpg" alt="Isolator"><strong>Isolator</strong><br>plug into female end</div>
+      <div class="arr">→</div>
+      <div class="cell"><img src="xtl2500-parts/07-ugreen-usb-audio.jpg" alt="UGREEN USB audio"><strong>UGREEN</strong><br>isolator into <span style="color:#b00000; font-weight:700;">RED</span> jack</div>
+      <div class="arr">→</div>
+      <div class="cell">
+        <svg viewBox="0 0 100 72" xmlns="http://www.w3.org/2000/svg" style="height:72px; width:auto; display:block; margin:0 auto 3px;"><rect x="14" y="6" width="72" height="46" rx="4" fill="#222"/><rect x="19" y="11" width="62" height="36" fill="#dfe8f5"/><rect x="4" y="54" width="92" height="8" rx="3" fill="#444"/></svg>
+        <strong>PC / Pi</strong><br>USB port
+      </div>
+    </div>
   </div>
 
   <h3>Part C — Power up</h3>
@@ -484,36 +731,130 @@
       <li>HLN6863B <strong>red fused ignition wire</strong> → also onto the supply <strong>red (+)</strong> post (two wires on the same post is fine). This is the “ignition sense” the radio looks for.</li>
       <li>Plug the supply into the wall.</li>
     </ul>
+    <div class="row">
+      <div class="fig" style="flex: 0 0 470px; max-width: 470px; margin: 0 auto;">
+        <svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif" font-size="9">
+          <rect x="8" y="10" width="170" height="120" rx="6" fill="#2b2b2b" stroke="#000"/>
+          <rect x="20" y="26" width="80" height="34" rx="3" fill="#111" stroke="#555"/>
+          <text x="60" y="49" text-anchor="middle" fill="#ff3b30" font-family="Consolas, monospace" font-size="16" font-weight="700">13.8 V</text>
+          <rect x="26" y="92" width="40" height="22" rx="3" fill="#111" stroke="#666"/>
+          <text x="46" y="107" text-anchor="middle" fill="#fff" font-size="10">OFF</text>
+          <text x="46" y="126" text-anchor="middle" fill="#ccc" font-size="8">OFF while wiring</text>
+          <path d="M146 42 C 170 20, 200 20, 300 20" stroke="#d00" stroke-width="2.5" fill="none"/>
+          <rect x="214" y="14" width="18" height="12" rx="2" fill="#c00" stroke="#600"/>
+          <path d="M151 50 H300" stroke="#d00" stroke-width="6" fill="none"/>
+          <path d="M151 100 H300" stroke="#111" stroke-width="6" fill="none"/>
+          <circle cx="140" cy="50" r="11" fill="#d00" stroke="#fff" stroke-width="2"/>
+          <text x="140" y="54" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">+</text>
+          <circle cx="140" cy="100" r="11" fill="#111" stroke="#fff" stroke-width="2"/>
+          <text x="140" y="104" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">−</text>
+          <text x="298" y="10" text-anchor="end" fill="#444">HLN6863B ignition (thin red, fused)</text>
+          <text x="298" y="66" text-anchor="end" fill="#444">HKN4191C red (thick)</text>
+          <text x="298" y="116" text-anchor="end" fill="#444">HKN4191C black (thick)</text>
+          <text x="150" y="150" text-anchor="middle" fill="#444" font-size="9.5">two red wires share the (+) post · black alone on (−)</text>
+        </svg>
+        <div class="cap">Front of the supply. Posts are usually screw‑down binding posts: loosen, wrap the bare wire, tighten.</div>
+      </div>
+    </div>
   </div>
 
   <div class="step">
     <h4>Switch on</h4>
-    <ul>
-      <li>Switch the supply on. The meter (or a multimeter on the posts) should read about <strong>13.8 V</strong>.</li>
-      <li>Press the radio’s <strong>power button</strong> (⏻, third small button left of the display). Display lights, radio beeps.</li>
-      <li>Select the channel / talkgroup you want to monitor. The volume knob does not matter for the PC — pin 21 is fixed level.</li>
-    </ul>
+    <div class="row">
+      <div class="body">
+        <ul>
+          <li>Switch the supply on. The meter (or a multimeter on the posts) should read about <strong>13.8 V</strong>.</li>
+          <li>Press the radio’s <strong>power button</strong> (⏻, the lowest of the three small buttons left of the display). Display lights, radio beeps.</li>
+          <li>Select the channel / talkgroup you want to monitor. The volume knob does not matter for the PC — pin 21 is fixed level.</li>
+        </ul>
+      </div>
+      <div class="fig">
+        <svg viewBox="25 55 190 150" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+          <image href="xtl2500-parts/00-your-xtl2500-front.png" x="0" y="0" width="440" height="244"/>
+          <circle cx="95" cy="149" r="15" fill="none" stroke="#ffd400" stroke-width="3"/>
+          <path d="M160 190 L113 160" stroke="#ffd400" stroke-width="3"/>
+          <path d="M118 171 L112 159 L125 160" fill="none" stroke="#ffd400" stroke-width="3"/>
+          <text x="212" y="200" text-anchor="end" font-size="11" font-weight="700" fill="#fff" stroke="#000" stroke-width="2.5" paint-order="stroke">⏻ power — press once</text>
+        </svg>
+        <div class="cap">Your radio, front left. Supply ON first, then this button.</div>
+      </div>
+    </div>
   </div>
 
   <h3>Part D — PC setup</h3>
 
   <div class="step">
     <h4>Windows (station PC)</h4>
-    <ul>
-      <li><span class="kbd">Settings → System → Sound → Input</span>. Choose <strong>USB Audio Device</strong> (sometimes “USB PnP Sound Device”).</li>
-      <li>Set input volume to about <strong>30 %</strong> to start. If there is a “Microphone boost” option under device properties, set it to <strong>0 dB</strong>.</li>
-      <li>Watch the input level meter during a transmission. It should bounce clearly but <strong>not</strong> hit the top. Raise or lower the input volume until it peaks around ⅔.</li>
-    </ul>
+    <div class="row">
+      <div class="body">
+        <ul>
+          <li><span class="kbd">Settings → System → Sound → Input</span>. Choose <strong>USB Audio Device</strong> (sometimes “USB PnP Sound Device”).</li>
+          <li>Set input volume to about <strong>30 %</strong> to start. If there is a “Microphone boost” option under device properties, set it to <strong>0 dB</strong>.</li>
+          <li>Watch the input level meter during a transmission. It should bounce clearly but <strong>not</strong> hit the top. Raise or lower the input volume until it peaks around ⅔.</li>
+        </ul>
+      </div>
+      <div class="fig">
+        <svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+          <rect x="1" y="1" width="278" height="198" rx="6" fill="#f3f3f3" stroke="#bbb"/>
+          <rect x="1" y="1" width="278" height="24" rx="6" fill="#e8e8e8"/>
+          <text x="12" y="17" font-size="10" fill="#333">Settings › System › Sound</text>
+          <text x="12" y="44" font-size="12" font-weight="700" fill="#111">Input</text>
+          <text x="12" y="58" font-size="9" fill="#555">Choose a device for speaking or recording</text>
+          <rect x="12" y="66" width="256" height="24" rx="4" fill="#fff" stroke="#0b4fa8" stroke-width="1.5"/>
+          <circle cx="26" cy="78" r="5" fill="#0b4fa8"/>
+          <circle cx="26" cy="78" r="2" fill="#fff"/>
+          <text x="38" y="82" font-size="10" fill="#111" font-weight="700">USB Audio Device</text>
+          <rect x="12" y="94" width="256" height="24" rx="4" fill="#fff" stroke="#ddd"/>
+          <circle cx="26" cy="106" r="5" fill="none" stroke="#888"/>
+          <text x="38" y="110" font-size="10" fill="#555">Microphone Array (built‑in)</text>
+          <text x="12" y="140" font-size="10" fill="#111">Input volume</text>
+          <rect x="90" y="136" width="150" height="4" rx="2" fill="#ccc"/>
+          <rect x="90" y="136" width="45" height="4" rx="2" fill="#0b4fa8"/>
+          <circle cx="135" cy="138" r="6" fill="#0b4fa8" stroke="#fff" stroke-width="2"/>
+          <text x="252" y="141" font-size="10" fill="#111">30</text>
+          <text x="12" y="166" font-size="10" fill="#111">Test your microphone</text>
+          <rect x="12" y="172" width="256" height="10" rx="2" fill="#ddd"/>
+          <rect x="12" y="172" width="170" height="10" rx="2" fill="#0a7a2a"/>
+          <text x="12" y="194" font-size="8.5" fill="#555">bar reaches about ⅔ during a transmission, never the end</text>
+        </svg>
+        <div class="cap">What the Windows 11 Sound page should look like (names vary slightly by version).</div>
+      </div>
+    </div>
   </div>
 
   <div class="step">
     <h4>Point the listener at the USB device</h4>
-    <ul>
-      <li>In <code>device/config.json</code> set <code>input_device</code> to the USB Audio Device (name or index — whatever your listener accepts).</li>
-      <li>Run <code>python listener.py</code>. Check its level readout during a transmission; adjust the Windows input volume if it clips.</li>
-      <li>Raspberry Pi: <code>arecord -l</code> lists the card number of the USB device; put that in <code>config.json</code> the same way.</li>
-      <li>For a station that runs unattended, set the listener to start automatically at login (Task Scheduler on Windows, a systemd service on the Pi).</li>
-    </ul>
+    <div class="row">
+      <div class="body">
+        <ul>
+          <li>In the <code>device</code> folder run <code>python list_audio_devices.py</code> — it prints every input with its index number.</li>
+          <li>In <code>device/config.json</code> set <code>input_device</code> to that index <em>or</em> a unique part of its name. Set <code>audio_source</code> to <code>radio_line</code> so the device record says it is wired to the radio.</li>
+          <li>Run <code>python listener.py</code>. The start‑up lines show <code>mic: USB Audio Device</code>. Watch its level during a transmission; adjust the Windows input volume if it clips.</li>
+          <li>Raspberry Pi: same two commands inside the venv; <code>arecord -l</code> also lists the USB card.</li>
+          <li>For a station that runs unattended, start the listener automatically (Task Scheduler on Windows, the systemd service on the Pi).</li>
+        </ul>
+      </div>
+      <div class="fig">
+<pre>&gt; python list_audio_devices.py
+Available audio devices:
+  0  Microphone Array (Realtek)
+  1  USB Audio Device    ◀ this one
+  ...
+
+device/config.json
+{
+  "device_id":    "station-1",
+  "audio_source": "radio_line",
+  "input_device": "USB Audio Device",
+  "sample_rate":  16000,
+  ...
+}
+
+&gt; python listener.py
+  mic:      USB Audio Device</pre>
+        <div class="cap">Index <code>1</code> would work too. Keep the rest of <code>config.json</code> as it is (keys, Supabase, ntfy).</div>
+      </div>
+    </div>
   </div>
 
   <div class="note">
